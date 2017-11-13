@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <functional>
 #include "Key.h"
+#include "common/errors.h"
 
 namespace OpenPGP {
 
@@ -191,7 +192,7 @@ Key::pkey Key::get_pkey() const {
     return pk;
 }
 
-bool Key::meaningful(const PGP & pgp){
+bool Key::meaningful(PGP & pgp){
     // public or private key packets to look for
     uint8_t key, subkey;
     if (pgp.get_type() == PUBLIC_KEY_BLOCK){
@@ -203,7 +204,8 @@ bool Key::meaningful(const PGP & pgp){
         subkey = Packet::SECRET_SUBKEY;
     }
     else{
-        // "Error: Bad key type: " + std::to_string(pgp.get_type()) + "\n";
+
+        throw std::error_code(KeyErrc::BadKey);
         return false;
     }
 
@@ -211,13 +213,13 @@ bool Key::meaningful(const PGP & pgp){
 
     // minimum 2 packets: Primary Key + User ID
     if (packets.size() < 2){
-        // "Error: Not enough packets (minimum 2).\n";
+        throw std::error_code(KeyErrc::NotEnoughPackets);
         return false;
     }
 
     //   - One Public/Secret-Key packet
     if (packets[0] -> get_tag() != key){
-        // "Error: First packet is not a " + Packet::NAME.at(key) + ".\n";
+        throw std::error_code(KeyErrc::FirstPacketWrong);
         return false;
     }
 
@@ -232,7 +234,7 @@ bool Key::meaningful(const PGP & pgp){
             i++;
         }
         else{
-            // "Error: Packet " + std::to_string(i) + " following " + Packet::NAME.at(key) + " is not a key revocation signature.\n";
+            throw std::error_code(KeyErrc::SignAfterPrimary);
             return false;
         }
     }
@@ -257,7 +259,7 @@ bool Key::meaningful(const PGP & pgp){
         // make sure there is a User packet
         if ((packets[i] -> get_tag() != Packet::USER_ID)       &&
             (packets[i] -> get_tag() != Packet::USER_ATTRIBUTE)){
-            // "Error: Packet is not a User ID or User Attribute Packet.\n";
+            throw std::error_code(KeyErrc::NotUserID);
             return false;
         }
 
@@ -291,8 +293,7 @@ bool Key::meaningful(const PGP & pgp){
                     // "Warning: Revocation Signature found on UID.\n";
                 }
                 else{
-                    std::cout << sig->show() << std::endl;
-                    // "Error: Signature is not a certification or revocation.\n";
+                    throw std::error_code(KeyErrc::WrongSignature);
                     return false;
                 }
             }
@@ -304,19 +305,19 @@ bool Key::meaningful(const PGP & pgp){
 
     // need at least one User ID packet
     if (!user_id){
-        // "Error: Need at least one " + Packet::NAME.at(Packet::USER_ID) + ".\n";
+        throw std::error_code(KeyErrc::AtLeastOneUID);
         return false;
     }
 
     //    - Zero or more Subkey packets
     while (i < packets.size()){
         if  (packets[i] -> get_tag() != subkey){
-            // "Error: Bad subkey packet.\n";
+            throw std::error_code(KeyErrc::NoSubkeyFound);
             return false;
         }
 
         if (primary_key_version == 3){
-            // "Error: Version 3 keys MUST NOT have subkeys.\n";
+            throw std::error_code(KeyErrc::Ver3Subkey);
             return false;
         }
 
@@ -351,17 +352,27 @@ bool Key::meaningful(const PGP & pgp){
         }
 
         if (!subkey_binding){
-            // "Error: No " + Signature_Type::NAME.at(Signature_Type::SUBKEY_BINDING_SIGNATURE) + " packet found following subkey.\n";
+            throw std::error_code(KeyErrc::NoSubkeyBinding);
             return false;
         }
     }
 
-    // the index should be at the end of the packets
-    return (i == packets.size());
+    if (i != packets.size()){
+        throw std::error_code(KeyErrc::NotAllPacketsAnalyzed);
+        return false;
+    }
+    pgp.meaningful_checked = true;
+    return true;
 }
 
 bool Key::meaningful() const{
-    return meaningful(*this);
+    if(meaningful_checked) { return true; }
+    try{
+        return meaningful(*this);
+        // return true;
+    }catch (std::exception e){
+        return false;
+    }
 }
 
 void Key::merge(Key::Ptr k) {

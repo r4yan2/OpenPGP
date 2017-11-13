@@ -66,6 +66,7 @@ namespace OpenPGP {
             typedef std::vector <Packet::Tag::Ptr> Packets;
 
         protected:
+            bool meaningful_checked = false;
             bool armored;                                   // default true
             Type_t type;                                    // what type of key is this
             Armor_Keys keys;                                // key-value pairs in the ASCII header
