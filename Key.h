@@ -78,7 +78,7 @@ namespace OpenPGP {
             std::string list_keys(const std::size_t indents = 0, const std::size_t indent_size = 4) const;
 
             // whether or not PGP data matches a Key format without constructing a new object
-            static bool meaningful(PGP & pgp);
+            static bool meaningful(const PGP & pgp);
 
             // whether or not *this data matches a Key format
             virtual bool meaningful() const;

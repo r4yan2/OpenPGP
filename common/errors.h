@@ -67,6 +67,8 @@ namespace { // anonymous namespace
             case KeyErrc::NotAllPacketsAnalyzed:
                 return "Error: Not all packets have been analyzed";
         }
+
+        return "Not recognized error";
     }
 
     const KeyErrCategory theKeyErrCategory{};

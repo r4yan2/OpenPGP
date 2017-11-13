@@ -186,13 +186,12 @@ Key::pkey Key::get_pkey() const {
                 break;
             default:
                 throw std::runtime_error("Packet not recognized during merge");
-                break;
         }
     }
     return pk;
 }
 
-bool Key::meaningful(PGP & pgp){
+bool Key::meaningful(const PGP & pgp){
     // public or private key packets to look for
     uint8_t key, subkey;
     if (pgp.get_type() == PUBLIC_KEY_BLOCK){
@@ -204,9 +203,7 @@ bool Key::meaningful(PGP & pgp){
         subkey = Packet::SECRET_SUBKEY;
     }
     else{
-
         throw std::error_code(KeyErrc::BadKey);
-        return false;
     }
 
     const Packets & packets = pgp.get_packets();
@@ -214,13 +211,11 @@ bool Key::meaningful(PGP & pgp){
     // minimum 2 packets: Primary Key + User ID
     if (packets.size() < 2){
         throw std::error_code(KeyErrc::NotEnoughPackets);
-        return false;
     }
 
     //   - One Public/Secret-Key packet
     if (packets[0] -> get_tag() != key){
         throw std::error_code(KeyErrc::FirstPacketWrong);
-        return false;
     }
 
     // get version of primary key
@@ -235,7 +230,6 @@ bool Key::meaningful(PGP & pgp){
         }
         else{
             throw std::error_code(KeyErrc::SignAfterPrimary);
-            return false;
         }
     }
 
@@ -260,7 +254,6 @@ bool Key::meaningful(PGP & pgp){
         if ((packets[i] -> get_tag() != Packet::USER_ID)       &&
             (packets[i] -> get_tag() != Packet::USER_ATTRIBUTE)){
             throw std::error_code(KeyErrc::NotUserID);
-            return false;
         }
 
         const Packet::User::Ptr user = std::static_pointer_cast <Packet::User> (packets[i]);
@@ -294,7 +287,6 @@ bool Key::meaningful(PGP & pgp){
                 }
                 else{
                     throw std::error_code(KeyErrc::WrongSignature);
-                    return false;
                 }
             }
 
@@ -306,19 +298,16 @@ bool Key::meaningful(PGP & pgp){
     // need at least one User ID packet
     if (!user_id){
         throw std::error_code(KeyErrc::AtLeastOneUID);
-        return false;
     }
 
     //    - Zero or more Subkey packets
     while (i < packets.size()){
         if  (packets[i] -> get_tag() != subkey){
             throw std::error_code(KeyErrc::NoSubkeyFound);
-            return false;
         }
 
         if (primary_key_version == 3){
             throw std::error_code(KeyErrc::Ver3Subkey);
-            return false;
         }
 
         i++;
@@ -353,29 +342,20 @@ bool Key::meaningful(PGP & pgp){
 
         if (!subkey_binding){
             throw std::error_code(KeyErrc::NoSubkeyBinding);
-            return false;
         }
     }
 
     if (i != packets.size()){
         throw std::error_code(KeyErrc::NotAllPacketsAnalyzed);
-        return false;
     }
-    pgp.meaningful_checked = true;
     return true;
 }
 
 bool Key::meaningful() const{
-    if(meaningful_checked) { return true; }
-    try{
-        return meaningful(*this);
-        // return true;
-    }catch (std::exception e){
-        return false;
-    }
+    return meaningful(*this);
 }
 
-void Key::merge(Key::Ptr k) {
+void Key::merge(Key::Ptr k){
     // Get pkey version from each key
     pkey pk1 = this->get_pkey();
     pkey pk2 = k->get_pkey();
