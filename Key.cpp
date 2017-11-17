@@ -4,7 +4,6 @@
 
 /* ERROR HANDLING SHOULD BE IN ANOTHER FILE */
 
-
 namespace { // anonymous namespace
 
     struct KeyErrCategory : std::error_category{
@@ -73,8 +72,8 @@ std::error_code make_error_code(KeyErrc e) {
     return {static_cast<int>(e), theKeyErrCategory};
 }
 
-
 /* END ERROR HANDLING */
+
 
 namespace OpenPGP {
 
@@ -93,53 +92,65 @@ Key::Key(const Key & copy)
 Key::Key(const std::string & data)
     : PGP(data)
 {
+#ifdef MEANINGFUL_CHECK
     // warn if packet sequence is not meaningful
     if (!meaningful()){
         throw std::runtime_error("Error: Data does not form a meaningful PGP Key");
     }
+#endif
 }
 
 Key::Key(std::istream & stream)
     : PGP(stream)
 {
+#ifdef MEANINGFUL_CHECK
     // warn if packet sequence is not meaningful
     if (!meaningful()){
         throw std::runtime_error("Error: Data does not form a meaningful PGP Key");
     }
+#endif
 }
 
 Key::~Key(){}
 
 std::string Key::keyid() const{
+#ifdef MEANINGFUL_CHECK
     if (!meaningful()){
         throw std::runtime_error("Error: Bad Key.");
     }
+#endif
 
     return std::static_pointer_cast <Packet::Key> (packets[0]) -> get_keyid();
 }
 
 std::string Key::fingerprint() const{
+#ifdef MEANINGFUL_CHECK
     if (!meaningful()){
         throw std::runtime_error("Error: Bad Key.");
     }
+#endif
 
     return std::static_pointer_cast <Packet::Key> (packets[0]) -> get_fingerprint();
 }
 
 uint8_t Key::version() const{
+#ifdef MEANINGFUL_CHECK
     if (!meaningful()){
         throw std::runtime_error("Error: Bad Key.");
     }
+#endif
 
     return std::static_pointer_cast <Packet::Key> (packets[0]) -> get_version();
 }
 
 // output style inspired by gpg and SKS Keyserver/pgp.mit.edu
 std::string Key::list_keys(const std::size_t indents, const std::size_t indent_size) const{
+#ifdef MEANINGFUL_CHECK
     if (!meaningful()){
         // "Error: Key data not meaningful.\n";
         return "";
     }
+#endif
 
     const std::string indent(indents * indent_size, ' ');
 
@@ -223,9 +234,11 @@ std::string Key::list_keys(const std::size_t indents, const std::size_t indent_s
 }
 
 Key::pkey Key::get_pkey() const {
+#ifdef MEANINGFUL_CHECK
     if (!meaningful()){
         throw std::runtime_error("Error: Bad Key.");
     }
+#endif
     pkey pk;
     pk.key = packets[0];
     Packet::Tag::Ptr lastUser = nullptr;
@@ -532,7 +545,7 @@ PublicKey::~PublicKey(){}
 bool PublicKey::meaningful() const{
     if (type != PUBLIC_KEY_BLOCK){
         // "Error: ASCII Armor type is not PUBLIC_KEY_BLOCK.\n";
-        return false;
+        throw std::error_code(KeyErrc::NotAPublicKey);
     }
 
     return Key::meaningful(*this);
@@ -616,7 +629,7 @@ PublicKey SecretKey::get_public() const{
 bool SecretKey::meaningful() const{
     if (type != PRIVATE_KEY_BLOCK){
         // "Error: ASCII Armor type is not PRIVATE_KEY_BLOCK.\n";
-        return false;
+        throw std::error_code(KeyErrc::NotASecretKey);
     }
 
     return Key::meaningful(*this);

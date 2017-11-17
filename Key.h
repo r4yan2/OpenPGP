@@ -58,8 +58,8 @@ namespace std{
 
 std::error_code make_error_code(KeyErrc);
 
-
 /* END ERROR HANDLING */
+
 
 namespace OpenPGP {
     class Key : public PGP {
