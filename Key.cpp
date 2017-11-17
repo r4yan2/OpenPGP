@@ -59,13 +59,13 @@ namespace { // anonymous namespace
 
             case KeyErrc::NotASecretKey:
                 return "Error: ASCII Armor type is not PRIVATE_KEY_BLOCK.";
-        }
 
+            case KeyErrc::DifferentKeys:
+                return "Error: Merge not possible between two different keys";
+        }
         return "Not recognized error";
     }
-
     const KeyErrCategory theKeyErrCategory{};
-
 }
 
 std::error_code make_error_code(KeyErrc e) {
@@ -307,6 +307,12 @@ bool Key::meaningful(const PGP & pgp){
     // get version of primary key
     const uint8_t primary_key_version = std::static_pointer_cast <Packet::Key> (packets[0]) -> get_version();
 
+    // version should be 2/3/4
+    const unsigned legal_version_values = (1 << 2) | (1 << 3) | (1 << 4);
+    if (!((1 << primary_key_version) & legal_version_values)){
+        throw std::error_code(KeyErrc::NotExistingVersion);
+    }
+
     //   - Zero or more revocation signatures
     unsigned int i = 1;
     while ((i < packets.size()) && (packets[i] -> get_tag() == Packet::SIGNATURE)){
@@ -447,7 +453,7 @@ void Key::merge(Key::Ptr k){
     pkey pk2 = k->get_pkey();
     // Verify that the primary keys are equals
     if (pk1.key != pk2.key){
-        throw std::runtime_error("Merge not possible between different keys");
+        throw std::error_code(KeyErrc::DifferentKeys);
     }
 
     // Join the sigpair list of the keys
@@ -466,9 +472,11 @@ void Key::merge(Key::Ptr k){
     // Set the new packets list
     set_packets_clone(new_packets);
 
+#ifdef MEANINGFUL_CHECK
     if (!meaningful()){
         throw std::logic_error("Key no more meaningful after merge");
     }
+#endif
 }
 
 

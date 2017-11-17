@@ -49,7 +49,8 @@ enum class KeyErrc{
     NoSubkeyBinding         = 11,   // "Error: No " + Signature_Type::NAME.at(Signature_Type::SUBKEY_BINDING_SIGNATURE) + " packet found following subkey.\n"
     NotAllPacketsAnalyzed   = 12,   // "Error: the index should be at the end of the packets"
     NotAPublicKey           = 13,   // "Error: ASCII Armor type is not PUBLIC_KEY_BLOCK.\n"
-    NotASecretKey           = 14    // "Error: ASCII Armor type is not SECRET_KEY_BLOCK.\n"
+    NotASecretKey           = 14,   // "Error: ASCII Armor type is not SECRET_KEY_BLOCK.\n"
+    DifferentKeys           = 15    // "Error: Merge not possible between two different keys
 };
 namespace std{
     template <>
