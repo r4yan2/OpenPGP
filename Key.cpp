@@ -1,10 +1,12 @@
 #include <algorithm>
 #include <functional>
 #include "Key.h"
+#include "common/errors.h"
 
 /* ERROR HANDLING SHOULD BE IN ANOTHER FILE */
-
+/*
 namespace { // anonymous namespace
+
 
     struct KeyErrCategory : std::error_category{
         const char* name() const noexcept override;
@@ -71,7 +73,7 @@ namespace { // anonymous namespace
 std::error_code make_error_code(KeyErrc e) {
     return {static_cast<int>(e), theKeyErrCategory};
 }
-
+*/
 /* END ERROR HANDLING */
 
 

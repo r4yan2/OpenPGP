@@ -61,6 +61,7 @@ THE SOFTWARE.
 #include "Sub30.h"      // Features
 #include "Sub31.h"      // Signature Target
 #include "Sub32.h"      // Embedded Signature
+#include "SubWrong.h"   // Wrong Subpacket Type
 
 #ifdef GPG_COMPATIBLE
 #include "Sub33.h"      // Issuer Fingerprint (GPG extension)

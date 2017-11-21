@@ -32,4 +32,5 @@ TAG2_SUBPACKET_OBJECTS=Subpacket.o  \
                        Sub30.o      \
                        Sub31.o      \
                        Sub32.o      \
-                       Sub33.o
+                       Sub33.o		\
+                       SubWrong.o

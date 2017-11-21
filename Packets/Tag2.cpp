@@ -152,9 +152,10 @@ void Tag2::read_subpackets(const std::string & data, Tag2::Subpackets & subpacke
         #endif
         else if((type >=100 && type <= 110) || type == 0 || type == 1){
             std::cerr << "Warning: Found private/reserved Tag 2 Subpacket: " << std::to_string(type) << std::endl;
+            subpacket = std::make_shared <Subpacket::Tag2::SubWrong> (type);
             // go to end of current subpacket
-            pos += length;
-        continue;
+            // pos += length;
+            // continue;
         }
         else{
             throw std::runtime_error("Error: Tag 2 Subpacket tag not defined or reserved: " + std::to_string(type));

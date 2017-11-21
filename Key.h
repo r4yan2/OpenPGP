@@ -32,6 +32,7 @@ THE SOFTWARE.
 #include "PGP.h"
 
 /* ERROR HANDLING SHOULD BE IN ANOTHER FILE */
+/*
 #include <system_error>
 
 
@@ -58,8 +59,9 @@ namespace std{
 }
 
 std::error_code make_error_code(KeyErrc);
-
+*/
 /* END ERROR HANDLING */
+
 
 
 namespace OpenPGP {

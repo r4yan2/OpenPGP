@@ -1,1 +1,2 @@
-COMMON_OBJECTS=includes.o
+COMMON_OBJECTS=	includes.o		\
+				errors.o

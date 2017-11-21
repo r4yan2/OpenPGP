@@ -56,11 +56,12 @@ namespace { // anonymous namespace
 
             case KeyErrc::NotASecretKey:
                 return "Error: ASCII Armor type is not PRIVATE_KEY_BLOCK.";
-        }
 
+            case KeyErrc::DifferentKeys:
+                return "Error: Merge not possible between two different keys";
+        }
         return "Not recognized error";
     }
-
     const KeyErrCategory theKeyErrCategory{};
 
 }
