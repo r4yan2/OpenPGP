@@ -59,6 +59,9 @@ namespace { // anonymous namespace
 
             case KeyErrc::DifferentKeys:
                 return "Error: Merge not possible between two different keys";
+
+            case KeyErrc::ParsingError:
+                return "Error: Could not parse data";
         }
         return "Not recognized error";
     }

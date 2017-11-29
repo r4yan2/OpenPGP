@@ -16,7 +16,8 @@ enum class KeyErrc{
     NotAllPacketsAnalyzed   = 12,   // "Error: the index should be at the end of the packets"
     NotAPublicKey           = 13,   // "Error: ASCII Armor type is not PUBLIC_KEY_BLOCK.\n"
     NotASecretKey           = 14,   // "Error: ASCII Armor type is not SECRET_KEY_BLOCK.\n"
-    DifferentKeys           = 15    // "Error: Merge not possible between two different keys
+    DifferentKeys           = 15,   // "Error: Merge not possible between two different keys
+    ParsingError            = 16    // "Error: error during parsing data
 };
 namespace std{
     template <>
