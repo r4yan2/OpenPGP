@@ -22,9 +22,11 @@ RevocationCertificate::RevocationCertificate(const std::string & data)
     type = PUBLIC_KEY_BLOCK;
 
     // warn if packet sequence is not meaningful
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!meaningful()){
         throw std::runtime_error("Error: Data does not form a meaningful PGP Revocation Certificate");
     }
+#endif
 }
 
 RevocationCertificate::RevocationCertificate(std::istream & stream)
@@ -32,18 +34,22 @@ RevocationCertificate::RevocationCertificate(std::istream & stream)
 {
     type = PUBLIC_KEY_BLOCK;
 
+#ifndef AVOID_MEANINGFUL_CHECK
     // warn if packet sequence is not meaningful
     if (!meaningful()){
         throw std::runtime_error("Error: Data does not form a meaningful PGP Revocation Certificate");
     }
+#endif
 }
 
 RevocationCertificate::~RevocationCertificate(){}
 
 uint8_t RevocationCertificate::get_revoke_type() const{
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!meaningful()){
         throw std::runtime_error("Error: Bad Revocation Certificate.");
     }
+#endif
 
     return std::static_pointer_cast <Packet::Tag2> (packets[0]) -> get_type();
 }

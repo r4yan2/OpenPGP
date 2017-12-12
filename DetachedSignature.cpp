@@ -23,10 +23,12 @@ DetachedSignature::DetachedSignature(const std::string & data)
 {
     type = SIGNATURE;
 
+#ifndef AVOID_MEANINGFUL_CHECK
     // warn if packet sequence is not meaningful
     if (!meaningful()){
         throw std::runtime_error("Error: Data does not form a meaningful PGP Detached Signature");
     }
+#endif
 }
 
 DetachedSignature::DetachedSignature(std::istream & stream)
@@ -35,9 +37,11 @@ DetachedSignature::DetachedSignature(std::istream & stream)
     type = SIGNATURE;
 
     // warn if packet sequence is not meaningful
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!meaningful()){
         throw std::runtime_error("Error: Data does not form a meaningful PGP Detached Signature");
     }
+#endif
 }
 
 DetachedSignature::~DetachedSignature(){}

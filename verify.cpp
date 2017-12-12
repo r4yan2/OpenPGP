@@ -23,15 +23,19 @@ int with_pka(const std::string & digest, const Packet::Key::Ptr & signer, const 
 }
 
 int detached_signature(const Key & key, const std::string & data, const DetachedSignature & sig){
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!key.meaningful()){
         // "Error: Bad PGP Key.\n";
         return -1;
     }
+#endif
 
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!sig.meaningful()){
         // "Error: Bad detached signature.\n";
         return -1;
     }
+#endif
 
     const Packet::Tag2::Ptr signature = std::static_pointer_cast <Packet::Tag2> (sig.get_packets()[0]);
 
@@ -67,15 +71,19 @@ int detached_signature(const Key & key, const std::string & data, const Detached
 
 // 0x00: Signature of a binary document.
 int binary(const Key & key, const Message & message){
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!key.meaningful()){
         // "Error: Bad PGP Key.\n";
         return -1;
     }
+#endif
 
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!message.meaningful()){
         // "Error: Bad message.\n";
         return -1;
     }
+#endif
 
     // most of the time OpenPGP Message data is compressed
     // then it is encrypted
@@ -206,15 +214,19 @@ int binary(const Key & key, const Message & message){
 
 // Signature type 0x01
 int cleartext_signature(const Key & key, const CleartextSignature & message){
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!key.meaningful()){
         // "Error: Bad PGP Key.\n";
         return -1;
     }
+#endif
 
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!message.meaningful()){
         // "Error: A Cleartext Signature is needed.\n";
         return -1;
     }
+#endif
 
     // find key id from signature to match with public key
     Packet::Tag2::Ptr signature = std::static_pointer_cast <Packet::Tag2> (message.get_sig().get_packets()[0]);
@@ -270,15 +282,19 @@ int primary_key(const Packet::Key::Ptr & signer_key, const Packet::Key::Ptr & si
 }
 
 int primary_key(const Key & signer, const Key & signee){
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!signer.meaningful()){
         // "Error: Bad Signer Key.\n";
         return -1;
     }
+#endif
 
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!signee.meaningful()){
         // "Error: Bad Signee Key.\n";
         return -1;
     }
+#endif
 
     // get signer's key id
     const std::string signer_keyid = signer.keyid();
@@ -337,15 +353,19 @@ int primary_key(const Key & signer, const Key & signee){
 // 0x28: Subkey revocation signature
 // 0x30: Certification revocation signature
 int revoke(const Key & key, const RevocationCertificate & revoke){
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!key.meaningful()){
         // "Error: Bad PGP Key.\n";
         return -1;
     }
+#endif
 
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!revoke.meaningful()){
         // "Error: A revocation key is required.\n";
         return -1;
     }
+#endif
 
     // get revocation signature
     const Packet::Tag2::Ptr revoke_sig = std::static_pointer_cast <Packet::Tag2> (revoke.get_packets()[0]);
@@ -407,15 +427,19 @@ int revoke(const Key & key, const RevocationCertificate & revoke){
 
 // 0x40: Timestamp signature.
 int timestamp(const Key & key, const DetachedSignature & timestamp){
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!key.meaningful()){
         // "Error: Bad PGP Key.\n";
         return -1;
     }
+#endif
 
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!timestamp.meaningful()){
         // "Error: Bad timestamp signature.\n";
         return -1;
     }
+#endif
 
     const Packet::Tag2::Ptr signature = std::static_pointer_cast <Packet::Tag2> (timestamp.get_packets()[0]);
 

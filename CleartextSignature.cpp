@@ -22,9 +22,11 @@ CleartextSignature::CleartextSignature(const std::string & data)
     read(data);
 
     // warn if packet sequence is not meaningful
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!meaningful()){
         throw std::runtime_error("Error: Data does not form a meaningful PGP Cleartext Signature");
     }
+#endif
 }
 
 CleartextSignature::CleartextSignature(std::istream & stream)
@@ -32,10 +34,12 @@ CleartextSignature::CleartextSignature(std::istream & stream)
 {
     read(stream);
 
+#ifndef AVOID_MEANINGFUL_CHECK
     // warn if packet sequence is not meaningful
     if (!meaningful()){
         throw std::runtime_error("Error: Data does not form a meaningful PGP Cleartext Signature");
     }
+#endif
 }
 
 void CleartextSignature::read(const std::string & data){

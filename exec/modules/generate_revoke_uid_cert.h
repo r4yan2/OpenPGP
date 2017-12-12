@@ -80,10 +80,12 @@ const Module generate_revoke_uid_cert(
 
         const OpenPGP::RevocationCertificate cert = OpenPGP::Revoke::uid_cert(revargs, args.at("-u"));
 
+#ifndef AVOID_MEANINGFUL_CHECK
         if (!cert.meaningful()){
             err << "Error: Generated bad UID revocation certificate." << std::endl;
             return -1;
         }
+#endif
 
         out << cert.write(flags.at("-a")?OpenPGP::PGP::Armored::YES:OpenPGP::PGP::Armored::NO, OpenPGP::Packet::Tag::Format::NEW) << std::endl;
         return 0;

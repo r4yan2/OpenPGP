@@ -98,10 +98,12 @@ const Module encrypt_pka(
 
             signer = std::make_shared <OpenPGP::SecretKey> (signing);
 
+#ifndef AVOID_MEANINGFUL_CHECK
             if (!signer -> meaningful()){
                 err << "Error: Bad signing key.\n";
                 return -1;
             }
+#endif
         }
 
         const OpenPGP::Encrypt::Args encryptargs(args.at("file"),
@@ -115,10 +117,12 @@ const Module encrypt_pka(
 
         const OpenPGP::Message encrypted = OpenPGP::Encrypt::pka(encryptargs, OpenPGP::PublicKey(key));
 
+#ifndef AVOID_MEANINGFUL_CHECK
         if (!encrypted.meaningful()){
             err << "Error: Generated bad encrypted data packet." << std::endl;
             return -1;
         }
+#endif
 
         out << encrypted.write(flags.at("-a")?OpenPGP::PGP::Armored::YES:OpenPGP::PGP::Armored::NO, OpenPGP::Packet::Tag::Format::NEW) << std::endl;
         return 0;

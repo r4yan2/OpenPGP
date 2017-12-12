@@ -71,20 +71,23 @@ const Module decrypt_sym(
             }
 
             signer = std::make_shared <OpenPGP::PublicKey> (s);
-
+#ifndef AVOID_MEANINGFUL_CHECK
             if (!signer -> meaningful()){
                 err << "Error: Bad signing key.\n";
                 return -1;
             }
+#endif
         }
 
         const OpenPGP::Message message(msg);
         const OpenPGP::Message decrypted = OpenPGP::Decrypt::sym(message, args.at("passphrase"));
 
+#ifndef AVOID_MEANINGFUL_CHECK
         if (!decrypted.meaningful()){
             err << "Error: Decrypted data is not meaningful." << std::endl;
             return -1;
         }
+#endif
 
         // extract data
         std::string cleartext = "";

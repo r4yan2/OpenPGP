@@ -87,10 +87,12 @@ const Module sign_file(
 
         const OpenPGP::Message message = OpenPGP::Sign::binary(signargs, args.at("file"), std::string(std::istreambuf_iterator <char> (file), {}), OpenPGP::Compression::NUMBER.at(args.at("-c")));
 
+#ifndef AVOID_MEANINGFUL_CHECK
         if (!message.meaningful()){
             err << "Error: Generated bad file signature." << std::endl;
             return -1;
         }
+#endif
 
         out << message.write(flags.at("-a")?OpenPGP::PGP::Armored::YES:OpenPGP::PGP::Armored::NO, OpenPGP::Packet::Tag::Format::NEW) << std::endl;
         return 0;

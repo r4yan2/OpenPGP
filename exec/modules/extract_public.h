@@ -37,10 +37,13 @@ const Module extract_public(
         }
 
         const OpenPGP::SecretKey pri(key);
+
+#ifndef AVOID_MEANINGFUL_CHECK
         if (!pri.meaningful()){
             err << "Error: Key is not meaningful." << std::endl;
             return -1;
         }
+#endif
 
         out << pri.get_public().write(flags.at("-a")?OpenPGP::PGP::Armored::YES:OpenPGP::PGP::Armored::NO, OpenPGP::Packet::Tag::Format::NEW) << std::endl;
         return 0;

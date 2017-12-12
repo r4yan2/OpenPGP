@@ -84,10 +84,12 @@ const Module sign_subkey(
 
         // OpenPGP::PublicKey key = OpenPGP::Sign::subkey(signargs, OpenPGP::PublicKey(signee_file), mpitoulong(hextompi(args.at("-c"))));
 
+#ifndef AVOID_MEANINGFUL_CHECK
         // if (!key.meaningful()){
             // err << "Error: Generated bad subkey signature." << std::endl;
             // return -1;
         // }
+#endif
 
         // out << key.write(flags.at("-a")?OpenPGP::PGP::Armored::YES:OpenPGP::PGP::Armored::NO, OpenPGP::Packet::Tag::Format::NEW) << std::endl;
         // return 0;

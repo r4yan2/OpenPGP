@@ -81,10 +81,12 @@ const Module sign_detached_signature(
 
         const OpenPGP::DetachedSignature signature = OpenPGP::Sign::detached_signature(signargs, std::string(std::istreambuf_iterator <char> (file), {}));
 
+#ifndef AVOID_MEANINGFUL_CHECK
         if (!signature.meaningful()){
             err << "Error: Generated bad detached signature." << std::endl;
             return -1;
         }
+#endif
 
         out << signature.write(flags.at("-a")?OpenPGP::PGP::Armored::YES:OpenPGP::PGP::Armored::NO, OpenPGP::Packet::Tag::Format::NEW) << std::endl;
         return 0;

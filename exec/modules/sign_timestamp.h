@@ -82,10 +82,12 @@ const Module sign_timestamp(
 
             const OpenPGP::DetachedSignature timestamp = OpenPGP::Sign::timestamp(signargs, time);
 
+#ifndef AVOID_MEANINGFUL_CHECK
         if (!timestamp.meaningful()){
             err << "Error: Generated bad timestamp signature." << std::endl;
             return -1;
         }
+#endif
 
         out << timestamp.write(flags.at("-a")?OpenPGP::PGP::Armored::YES:OpenPGP::PGP::Armored::NO, OpenPGP::Packet::Tag::Format::NEW) << std::endl;
         return 0;

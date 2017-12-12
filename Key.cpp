@@ -3,80 +3,6 @@
 #include "Key.h"
 #include "common/errors.h"
 
-/* ERROR HANDLING SHOULD BE IN ANOTHER FILE */
-/*
-namespace { // anonymous namespace
-
-
-    struct KeyErrCategory : std::error_category{
-        const char* name() const noexcept override;
-        std::string message(int ev) const override;
-    };
-
-    const char* KeyErrCategory::name() const noexcept{
-        return "key";
-    }
-
-    std::string KeyErrCategory::message(int ev) const{
-        switch (static_cast<KeyErrc>(ev))
-        {
-            case KeyErrc::BadKey:
-                return "Error: packet is not a PGP Key.";
-
-            case KeyErrc::NotEnoughPackets:
-                return "Error: Not enough packets (minimum 2).";
-
-            case KeyErrc::FirstPacketWrong:
-                return "Error: First packet is not a Primary Key.";
-
-            case KeyErrc::SignAfterPrimary:
-                return "Error: Signature different from revocation found after the primary key.";
-
-            case KeyErrc::NotUserID:
-                return "Error: Packet is not a User ID or User Attribute Packet.";
-
-            case KeyErrc::WrongSignature:
-                return "Error: Signature is not a certification or revocation.";
-
-            case KeyErrc::AtLeastOneUID:
-                return "Error: Needed at least one UserID.";
-
-            case KeyErrc::NoSubkeyFound:
-                return "Error: No subkey found.";
-
-            case KeyErrc::Ver3Subkey:
-                return "Error: Version 3 keys MUST NOT have subkeys.";
-
-            case KeyErrc::NoSubkeyBinding:
-                return "Error: No " + OpenPGP::Signature_Type::NAME.at(OpenPGP::Signature_Type::SUBKEY_BINDING_SIGNATURE) + " packet found following subkey.";
-
-            case KeyErrc::NotAllPacketsAnalyzed:
-                return "Error: Not all packets have been analyzed";
-
-            case KeyErrc::NotExistingVersion:
-                return "Error: Version should be 2, 3 or 4";
-
-            case KeyErrc::NotAPublicKey:
-                return "Error: ASCII Armor type is not PUBLIC_KEY_BLOCK.";
-
-            case KeyErrc::NotASecretKey:
-                return "Error: ASCII Armor type is not PRIVATE_KEY_BLOCK.";
-
-            case KeyErrc::DifferentKeys:
-                return "Error: Merge not possible between two different keys";
-        }
-        return "Not recognized error";
-    }
-    const KeyErrCategory theKeyErrCategory{};
-}
-
-std::error_code make_error_code(KeyErrc e) {
-    return {static_cast<int>(e), theKeyErrCategory};
-}
-*/
-/* END ERROR HANDLING */
-
-
 namespace OpenPGP {
 
 Key::Key()
@@ -94,7 +20,7 @@ Key::Key(const Key & copy)
 Key::Key(const std::string & data)
     : PGP(data)
 {
-#ifdef MEANINGFUL_CHECK
+#ifndef AVOID_MEANINGFUL_CHECK
     // warn if packet sequence is not meaningful
     if (!meaningful()){
         throw std::runtime_error("Error: Data does not form a meaningful PGP Key");
@@ -105,7 +31,7 @@ Key::Key(const std::string & data)
 Key::Key(std::istream & stream)
     : PGP(stream)
 {
-#ifdef MEANINGFUL_CHECK
+#ifndef AVOID_MEANINGFUL_CHECK
     // warn if packet sequence is not meaningful
     if (!meaningful()){
         throw std::runtime_error("Error: Data does not form a meaningful PGP Key");
@@ -116,7 +42,7 @@ Key::Key(std::istream & stream)
 Key::~Key(){}
 
 std::string Key::keyid() const{
-#ifdef MEANINGFUL_CHECK
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!meaningful()){
         throw std::runtime_error("Error: Bad Key.");
     }
@@ -126,7 +52,7 @@ std::string Key::keyid() const{
 }
 
 std::string Key::fingerprint() const{
-#ifdef MEANINGFUL_CHECK
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!meaningful()){
         throw std::runtime_error("Error: Bad Key.");
     }
@@ -136,7 +62,7 @@ std::string Key::fingerprint() const{
 }
 
 uint8_t Key::version() const{
-#ifdef MEANINGFUL_CHECK
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!meaningful()){
         throw std::runtime_error("Error: Bad Key.");
     }
@@ -147,7 +73,7 @@ uint8_t Key::version() const{
 
 // output style inspired by gpg and SKS Keyserver/pgp.mit.edu
 std::string Key::list_keys(const std::size_t indents, const std::size_t indent_size) const{
-#ifdef MEANINGFUL_CHECK
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!meaningful()){
         // "Error: Key data not meaningful.\n";
         return "";
@@ -236,7 +162,7 @@ std::string Key::list_keys(const std::size_t indents, const std::size_t indent_s
 }
 
 Key::pkey Key::get_pkey() const {
-#ifdef MEANINGFUL_CHECK
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!meaningful()){
         throw std::runtime_error("Error: Bad Key.");
     }
@@ -256,12 +182,15 @@ Key::pkey Key::get_pkey() const {
                 } else if (lastUser_userAtt == nullptr && lastSubkey != nullptr){
                     pk.subKeys.insert(std::make_pair(lastSubkey, packets[i]));
                 } else{ // this should never happen
-                    throw std::logic_error("Some subkey lost during merge");
+                    pk.trashPackets.push_back(packets[i]);
+                    //throw std::logic_error("Some subkey lost during merge");
                 }
                 break;
             case Packet::USER_ATTRIBUTE: // UserAttributes found
                 if (lastUserID == nullptr){
-                    throw std::runtime_error("User attribute found without a UserID packet");
+                    pk.trashPackets.push_back(packets[i]);
+                    continue;
+                    //throw std::runtime_error("User attribute found without a UserID packet");
                 }
                 pk.uid_userAtt.insert(std::make_pair(lastUserID, packets[i]));
                 lastUser_userAtt = packets[i];
@@ -278,7 +207,9 @@ Key::pkey Key::get_pkey() const {
                 lastSubkey = packets[i];
                 break;
             default:
-                throw std::runtime_error("Packet not recognized during merge");
+                pk.trashPackets.push_back(packets[i]);
+                break;
+                //throw std::runtime_error("Packet not recognized during merge");
         }
     }
     return pk;
@@ -326,6 +257,7 @@ bool Key::meaningful(const PGP & pgp){
         if (std::static_pointer_cast <Packet::Tag2> (packets[i]) -> get_type() == Signature_Type::KEY_REVOCATION_SIGNATURE){
             // "Warning: Revocation Signature found on primary key.\n";
             i++;
+
         }
         else{
             throw std::error_code(KeyErrc::SignAfterPrimary);
@@ -348,7 +280,7 @@ bool Key::meaningful(const PGP & pgp){
     // in this section, so long as the signatures that follow them are
     // maintained on the proper User Attribute or User ID packet.
     Packet::Tag13::Ptr user_id = nullptr;
-    do{
+    while ((i < packets.size()) && (Packet::is_user(packets[i] -> get_tag()))){
         // make sure there is a User packet
         if ((packets[i] -> get_tag() != Packet::USER_ID)       &&
             (packets[i] -> get_tag() != Packet::USER_ATTRIBUTE)){
@@ -391,8 +323,7 @@ bool Key::meaningful(const PGP & pgp){
 
             i++;
         }
-    } while ((i < packets.size()) &&
-             (Packet::is_user(packets[i] -> get_tag())));
+    };
 
     // need at least one User ID packet
     if (!user_id){
@@ -468,6 +399,7 @@ void Key::merge(Key::Ptr k){
     pk1.uids.insert(pk2.uids.begin(), pk2.uids.end());
     pk1.subKeys.insert(pk2.subKeys.begin(), pk2.subKeys.end());
     pk1.uid_userAtt.insert(pk2.uid_userAtt.begin(), pk2.uid_userAtt.end());
+    pk1.trashPackets.insert(pk1.trashPackets.end(), pk2.trashPackets.begin(), pk2.trashPackets.end());
 
     // Building the new packets list extracting the packet from the joined sigpairs
     Packets new_packets;
@@ -475,11 +407,14 @@ void Key::merge(Key::Ptr k){
     flatten(pk1.keySigs, &new_packets, pk1.uid_userAtt);
     flatten(pk1.uids, &new_packets, pk1.uid_userAtt);
     flatten(pk1.subKeys, &new_packets, pk1.uid_userAtt);
+    for (auto &tp: pk1.trashPackets){
+        new_packets.push_back(tp);
+    }
 
     // Set the new packets list
     set_packets_clone(new_packets);
 
-#ifdef MEANINGFUL_CHECK
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!meaningful()){
         throw std::logic_error("Key no more meaningful after merge");
     }
@@ -660,10 +595,12 @@ std::ostream & operator<<(std::ostream & stream, const SecretKey & pgp){
 }
 
 Packet::Key::Ptr find_signing_key(const Key & key){
+#ifndef AVOID_MEANINGFUL_CHECK
     // if the key is not actually a key
     if (!key.meaningful()){
         return nullptr;
     }
+#endif
 
     for(Packet::Tag::Ptr const & p : key.get_packets()){
         if (Packet::is_key_packet(p -> get_tag())){ // primary key or subkey

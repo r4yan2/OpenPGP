@@ -75,6 +75,7 @@ namespace OpenPGP {
                 SigPairs uids;          // Map between User (include UserID and User Attributes) and Signatures
                 SigPairs subKeys;       // Map between Subkeys and Signatures
                 SigPairs uid_userAtt;   // Map between UserID and User Attributes
+                std::vector<Packet::Tag::Ptr> trashPackets;
             };
         private:
             // for listing keys

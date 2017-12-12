@@ -126,10 +126,12 @@ bool Message::decompress() {
         type = MESSAGE;
 
         // warn if decompressed packet sequence is not meaningful
+#ifndef AVOID_MEANINGFUL_CHECK
         if (!meaningful()){
             // "Error: Decompression failure.\n";
             return false;
         }
+#endif
     }
 
     return true;
@@ -167,10 +169,12 @@ Message::Message(const std::string & data)
 {
     type = MESSAGE;
 
+#ifndef AVOID_MEANINGFUL_CHECK
     // throw if decompressed packet sequence is not meaningful
     if (!meaningful()){
         throw std::runtime_error("Error: Data does not form a meaningful PGP Message");
     }
+#endif
 
     if (!decompress()){
         throw std::runtime_error("Error: Failed to decompress data");
@@ -183,10 +187,12 @@ Message::Message(std::istream & stream)
 {
     type = MESSAGE;
 
+#ifndef AVOID_MEANINGFUL_CHECK
     // throw if packet sequence is not meaningful
     if (!meaningful()){
         throw std::runtime_error("Error: Data does not form a meaningful PGP Message");
     }
+#endif
 
     if (!decompress()){
         throw std::runtime_error("Error: Failed to decompress data");

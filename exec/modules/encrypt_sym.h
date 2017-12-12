@@ -98,10 +98,12 @@ const Module encrypt_sym(
 
             signer = std::make_shared <OpenPGP::SecretKey> (signing);
 
+#ifndef AVOID_MEANINGFUL_CHECK
             if (!signer -> meaningful()){
                 err << "Error: Bad signing key.\n";
                 return -1;
             }
+#endif
         }
 
         const OpenPGP::Encrypt::Args encryptargs(args.at("file"),

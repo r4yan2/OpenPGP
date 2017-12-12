@@ -1,4 +1,5 @@
 #include "Key.h"
+#include "../common/errors.h"
 
 namespace OpenPGP {
 namespace Packet {
@@ -61,6 +62,37 @@ void Key::read_common(const std::string & data, std::string::size_type & pos){
         pka = data[pos + 5];
         pos += 6;
 
+
+#ifdef GPG_COMPATIBLE
+
+        // RSA
+        if(pka == PKA::ID::RSA_ENCRYPT_ONLY || pka == PKA::ID::RSA_ENCRYPT_OR_SIGN || pka == PKA::ID::RSA_SIGN_ONLY){
+            mpi.push_back(read_MPI(data, pos));     // RSA n
+            mpi.push_back(read_MPI(data, pos));     // RSA e
+        }
+        //EdDSA
+        else if(pka == PKA::ID::EdDSA){
+            mpi.push_back(read_MPI(data, pos)); //        EdDSA p
+            mpi.push_back(read_MPI(data, pos)); //        EdDSA g
+            mpi.push_back(read_MPI(data, pos)); //        EdDSA y
+        }
+        // DSA
+        else if (pka == PKA::ID::DSA){
+            mpi.push_back(read_MPI(data, pos)); //        DSA p
+            mpi.push_back(read_MPI(data, pos)); //        DSA q
+            mpi.push_back(read_MPI(data, pos)); //        DSA g
+            mpi.push_back(read_MPI(data, pos)); //        DSA y
+        }
+        // ELGAMAL
+        else if (pka == PKA::ID::ELGAMAL){
+            mpi.push_back(read_MPI(data, pos));     // ELGAMAL p
+            mpi.push_back(read_MPI(data, pos));     // ELGAMAL g
+            mpi.push_back(read_MPI(data, pos));     // ELGAMAL y
+        }
+        else{
+            throw std::error_code(KeyErrc::AlgorithmNotFound);
+        }
+#else
         // at minimum RSA
         mpi.push_back(read_MPI(data, pos));     // RSA n, DSA p, ELGAMAL p
         mpi.push_back(read_MPI(data, pos));     // RSA e, DSA q, ELGAMAL g
@@ -74,6 +106,7 @@ void Key::read_common(const std::string & data, std::string::size_type & pos){
         else if (pka == PKA::ID::ELGAMAL){
             mpi.push_back(read_MPI(data, pos)); //               ELGAMAL y
         }
+#endif
     }
 }
 
@@ -104,6 +137,13 @@ std::string Key::show_common(const std::size_t indents, const std::size_t indent
                    indent + tab + "ELGAMAL g (" + std::to_string(bitsize(mpi[1])) + " bits): " + mpitohex(mpi[1]) + "\n" +
                    indent + tab + "ELGAMAL y (" + std::to_string(bitsize(mpi[2])) + " bits): " + mpitohex(mpi[2]);
         }
+#ifdef GPG_COMPATIBLE
+        else if (pka == PKA::ID::EdDSA){
+            out += indent + tab + "EdDSA p (" + std::to_string(bitsize(mpi[0])) + " bits): " + mpitohex(mpi[0]) + "\n" +
+                   indent + tab + "EdDSA g (" + std::to_string(bitsize(mpi[1])) + " bits): " + mpitohex(mpi[1]) + "\n" +
+                   indent + tab + "EdDSA y (" + std::to_string(bitsize(mpi[2])) + " bits): " + mpitohex(mpi[2]);
+        }
+#endif
         else if (pka == PKA::ID::DSA){
             out += indent + tab + "DSA p (" + std::to_string(bitsize(mpi[0])) + " bits): " + mpitohex(mpi[0]) + "\n" +
                    indent + tab + "DSA q (" + std::to_string(bitsize(mpi[1])) + " bits): " + mpitohex(mpi[1]) + "\n" +

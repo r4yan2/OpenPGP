@@ -62,6 +62,10 @@ namespace { // anonymous namespace
 
             case KeyErrc::ParsingError:
                 return "Error: Could not parse data";
+
+            case KeyErrc::AlgorithmNotFound:
+                return "Error: Algorithm for public key not found";
+
         }
         return "Not recognized error";
     }

@@ -88,10 +88,12 @@ const Module revoke_subkey(
 
         const OpenPGP::PublicKey revoked = OpenPGP::Revoke::subkey(revargs, args.at("-k"));
 
+#ifndef AVOID_MEANINGFUL_CHECK
         if (!revoked.meaningful()){
             err << "Error: Generated bad subkey revocation signature." << std::endl;
             return -1;
         }
+#endif
 
         out << revoked.write(flags.at("-a")?OpenPGP::PGP::Armored::YES:OpenPGP::PGP::Armored::NO, OpenPGP::Packet::Tag::Format::NEW) << std::endl;
         return 0;

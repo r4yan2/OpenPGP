@@ -80,10 +80,12 @@ Message pka(const Args & args,
         return Message();
     }
 
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!pgpkey.meaningful()){
         // "Error: Bad key.\n";
         return Message();
     }
+#endif
 
     // Check if key has been revoked
     const int rc = Revoke::check(pgpkey);

@@ -1,6 +1,6 @@
 # OpenPGP test Makefile
 CXX?=g++
-CXXFLAGS=-std=c++11 -Wall -I../../googletest/googletest/include
+CXXFLAGS=-std=c++11 -Werror -Wall -I../../googletest/googletest/include
 LDFLAGS=-lOpenPGP -lgmpxx -lgmp -lbz2 -lz -lgtest -lpthread -L../../googletest/googlemock/gtest -L..
 AR=ar
 TARGET=tests

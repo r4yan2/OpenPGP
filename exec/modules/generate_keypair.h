@@ -138,10 +138,12 @@ const Module generate_keypair(
 
         const OpenPGP::SecretKey pri = OpenPGP::generate_key(config);
 
+#ifndef AVOID_MEANINGFUL_CHECK
         if (!pri.meaningful()){
             err << "Error: Generated bad keypair." << std::endl;
             return -1;
         }
+#endif
 
         const OpenPGP::PublicKey pub = pri.get_public();
 

@@ -73,10 +73,12 @@ const Module revoke_with_cert(
 
         const OpenPGP::PublicKey revoked = OpenPGP::Revoke::with_cert(key, rev);
 
+#ifndef AVOID_MEANINGFUL_CHECK
         if (!revoked.meaningful()){
             err << "Error: Generated bad revoked key." << std::endl;
             return -1;
         }
+#endif
 
         out << revoked.write(flags.at("-a")?OpenPGP::PGP::Armored::YES:OpenPGP::PGP::Armored::NO, OpenPGP::Packet::Tag::Format::NEW) << std::endl;
         return 0;

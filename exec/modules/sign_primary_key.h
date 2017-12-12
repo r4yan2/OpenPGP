@@ -83,10 +83,12 @@ const Module sign_primary_key(
 
         const OpenPGP::PublicKey key = OpenPGP::Sign::primary_key(signargs, OpenPGP::PublicKey(signee_file), args.at("-u"), OpenPGP::mpitoulong(OpenPGP::hextompi(args.at("-c"))));
 
+#ifndef AVOID_MEANINGFUL_CHECK
         if (!key.meaningful()){
             err << "Error: Generated bad primary key signature." << std::endl;
             return -1;
         }
+#endif
 
         out << key.write(flags.at("-a")?OpenPGP::PGP::Armored::YES:OpenPGP::PGP::Armored::NO, OpenPGP::Packet::Tag::Format::NEW) << std::endl;
         return 0;

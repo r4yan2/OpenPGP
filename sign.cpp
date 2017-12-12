@@ -236,10 +236,12 @@ PublicKey primary_key(const Args & args, const PublicKey & signee, const std::st
         return PublicKey();
     }
 
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!signee.meaningful()){
         // "Error: Bad signee key.\n";
         return PublicKey();
     }
+#endif
 
     if (Revoke::check(signee)){
         // "Error: Signer key is revoked. Nothing done.\n";

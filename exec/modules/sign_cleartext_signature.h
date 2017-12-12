@@ -81,10 +81,12 @@ const Module sign_cleartext_signature(
 
         const OpenPGP::CleartextSignature signature = OpenPGP::Sign::cleartext_signature(signargs, std::string(std::istreambuf_iterator<char>(file), {}));
 
+#ifndef AVOID_MEANINGFUL_CHECK
         if (!signature.meaningful()){
             err << "Error: Generated bad cleartext signature." << std::endl;
             return -1;
         }
+#endif
 
         out << signature.write() << std::endl;
         return 0;

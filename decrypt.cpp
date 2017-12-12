@@ -68,15 +68,19 @@ Message data(const uint8_t sym,
 Message pka(const SecretKey & pri,
             const std::string & passphrase,
             const Message & message){
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!pri.meaningful()){
         // "Error: Bad private key.\n";
         return Message();
     }
+#endif
 
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!message.meaningful()){
         // "Error: No encrypted message found.\n";
         return Message();
     }
+#endif
 
     // find Public-Key Encrypted Session Key Packet (Tag 1)
     // should be first packet
@@ -159,10 +163,12 @@ Message pka(const SecretKey & pri,
 
 Message sym(const Message & message,
             const std::string & passphrase){
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!message.meaningful()){
         // "Error: Bad message.\n";
         return Message();
     }
+#endif
 
     // find Symmetric Key Encrypted Session Key (Tag 3)
     // should be first packet

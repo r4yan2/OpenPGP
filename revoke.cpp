@@ -5,10 +5,12 @@ namespace Revoke {
 
 // this probably needs fixing
 int check(const Key & key){
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!key.meaningful()){
         // "Error: Bad Key.\n";
         return -1;
     }
+#endif
 
     const PGP::Packets packets = key.get_packets();
 
@@ -290,15 +292,19 @@ RevocationCertificate uid_cert(const Args & args, const std::string & ID){
 
 // Revoke with certificate
 PublicKey with_cert(const Key & key, const RevocationCertificate & revoke){
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!key.meaningful()){
         // "Error: Bad key.\n";
         return PublicKey();
     }
+#endif
 
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!revoke.meaningful()){
         // "Error: Bad revocation certificate.\n";
         return PublicKey();
     }
+#endif
 
     // make sure that the revocation certificate is for the given key
     const int rc = Verify::revoke(key, revoke);

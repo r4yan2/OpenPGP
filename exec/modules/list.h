@@ -63,10 +63,12 @@ const Module list(
 
         const OpenPGP::Key key(f);
 
+#ifndef AVOID_MEANINGFUL_CHECK
         if (!key.meaningful()){
             err << "Warning: Provided key is not meaningful" << std::endl;
             // display contents despite warning
         }
+#endif
 
         out << key.list_keys() << std::flush;
         return 0;

@@ -5,10 +5,12 @@ namespace OpenPGP {
 bool fill_key_sigs(SecretKey & private_key, const std::string & passphrase){
     RNG::BBS(static_cast <MPI> (static_cast <uint32_t> (now()))); // seed just in case not seeded
 
+#ifndef AVOID_MEANINGFUL_CHECK
     if (!private_key.meaningful()){
         // "Error: Bad key.\n";
         return false;
     }
+#endif
 
     const std::string keyid = private_key.keyid();
     const Packet::Tag5::Ptr primary = std::static_pointer_cast <Packet::Tag5> (private_key.get_packets()[0]);

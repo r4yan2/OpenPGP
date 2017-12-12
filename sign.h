@@ -74,10 +74,12 @@ namespace OpenPGP {
                 {}
 
             bool valid() const{
+#ifndef AVOID_MEANINGFUL_CHECK
                 if (!pri.meaningful()){
                     // "Error: Bad Private Key.\n";
                     return false;
                 }
+#endif
 
                 if ((version != 3) && (version != 4)){
                     // "Error: Bad version: " + std::to_string(version) + "\n";

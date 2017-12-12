@@ -87,10 +87,12 @@ const Module generate_revoke_key_cert(
 
         const OpenPGP::RevocationCertificate cert = OpenPGP::Revoke::key_cert(revargs);
 
+#ifndef AVOID_MEANINGFUL_CHECK
         if (cert.meaningful()){
             err << "Error: Generated bad key revocation certificate." << std::endl;
             return -1;
         }
+#endif
 
         out << cert.write(flags.at("-a")?OpenPGP::PGP::Armored::YES:OpenPGP::PGP::Armored::NO, OpenPGP::Packet::Tag::Format::NEW) << std::endl;
         return 0;
