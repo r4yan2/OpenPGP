@@ -115,9 +115,9 @@ namespace OpenPGP {
             std::make_pair(ID::ELGAMAL,             'g'),
             std::make_pair(ID::DSA,                 'D'),
 #ifdef GPG_COMPATIBLE
-            std::make_pair(ID::ECDH,                 'D'),
-            std::make_pair(ID::ECDSA,                'D'),
-            std::make_pair(ID::EdDSA,                'D'),
+            std::make_pair(ID::ECDH,                 'e'),
+            std::make_pair(ID::ECDSA,                'e'),
+            std::make_pair(ID::EdDSA,                'e'),
 #endif
         };
 

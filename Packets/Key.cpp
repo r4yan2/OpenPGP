@@ -70,18 +70,26 @@ void Key::read_common(const std::string & data, std::string::size_type & pos){
             mpi.push_back(read_MPI(data, pos));     // RSA n
             mpi.push_back(read_MPI(data, pos));     // RSA e
         }
-        //EdDSA
-        else if(pka == PKA::ID::EdDSA){
-            mpi.push_back(read_MPI(data, pos)); //        EdDSA p
-            mpi.push_back(read_MPI(data, pos)); //        EdDSA g
-            mpi.push_back(read_MPI(data, pos)); //        EdDSA y
-        }
         // DSA
         else if (pka == PKA::ID::DSA){
             mpi.push_back(read_MPI(data, pos)); //        DSA p
             mpi.push_back(read_MPI(data, pos)); //        DSA q
             mpi.push_back(read_MPI(data, pos)); //        DSA g
             mpi.push_back(read_MPI(data, pos)); //        DSA y
+        }
+        //EdDSA
+        else if(pka == PKA::ID::EdDSA){
+            mpi.push_back(read_MPI(data, pos)); //        EdDSA p
+            mpi.push_back(read_MPI(data, pos)); //        EdDSA g
+            mpi.push_back(read_MPI(data, pos)); //        EdDSA y
+        }
+        //ECDSA
+        else if (pka == PKA::ID::ECDSA){
+            throw std::error_code(KeyErrc::AlgorithmNotFound);
+        }
+        //ECDH
+        else if (pka == PKA::ID::ECDH){
+            throw std::error_code(KeyErrc::AlgorithmNotFound);
         }
         // ELGAMAL
         else if (pka == PKA::ID::ELGAMAL){

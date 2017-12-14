@@ -155,7 +155,7 @@ void Tag2::read_subpackets(const std::string & data, Tag2::Subpackets & subpacke
             subpacket = std::make_shared <Subpacket::Tag2::SubWrong> (type);
         }
         else{
-            throw std::runtime_error("Error: Tag 2 Subpacket tag not defined or reserved: " + std::to_string(type));
+            std::cerr << "Error: Tag 2 Subpacket tag not defined: " << std::to_string(type) << std::endl;
             subpacket = std::make_shared <Subpacket::Tag2::SubWrong> (type);
         }
 

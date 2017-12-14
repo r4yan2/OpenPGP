@@ -35,13 +35,18 @@ namespace OpenPGP {
                 std::string data;
 
             public:
-                typedef std::shared_ptr <SubWrong> Ptr;
+                typedef std::shared_ptr<SubWrong> Ptr;
 
                 SubWrong();
-                SubWrong(const uint8_t & t);
-                SubWrong(const std::string & data);
-                void read(const std::string & data);
+
+                SubWrong(const uint8_t &t);
+
+                SubWrong(const std::string &data);
+
+                void read(const std::string &data);
+
                 std::string show(const std::size_t indents = 0, const std::size_t indent_size = 4) const;
+
                 std::string raw() const;
 
                 Sub::Ptr clone() const;
