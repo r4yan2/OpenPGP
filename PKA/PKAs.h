@@ -95,6 +95,39 @@ namespace OpenPGP {
             std::make_pair(110,                     "Private/Experimental algorithm"),
         };
 
+
+#ifdef GPG_COMPATIBLE
+        namespace CURVE_OID {
+            const std::string NIST_256          = "1.2.840.10045.3.1.7";
+            const std::string NIST_384          = "1.3.132.0.34";
+            const std::string NIST_521          = "1.3.132.0.35";
+            const std::string BRAINPOOL_256     = "1.3.36.3.3.2.8.1.1.7";
+            const std::string BRAINPOOL_512     = "1.3.36.3.3.2.8.1.1.13";
+            const std::string ED_255            = "1.3.6.1.4.1.11591.15.1";
+            const std::string CURVE_255         = "1.3.6.1.4.1.3029.1.5.1";
+        }
+
+        const std::map <std::string, std::string> CURVE_NAME = {
+                std::make_pair(CURVE_OID::NIST_256,      "NIST P-256"),
+                std::make_pair(CURVE_OID::NIST_384,      "NIST P-384"),
+                std::make_pair(CURVE_OID::NIST_521,      "NIST P-521"),
+                std::make_pair(CURVE_OID::BRAINPOOL_256, "brainpoolP256r1"),
+                std::make_pair(CURVE_OID::BRAINPOOL_512, "brainpoolP512r1"),
+                std::make_pair(CURVE_OID::ED_255,        "Ed25519"),
+                std::make_pair(CURVE_OID::CURVE_255,     "Curve25519")
+        };
+
+        const std::map <std::string, uint8_t> CURVE_OID_LENGTH = {
+                std::make_pair(CURVE_OID::NIST_256,      8),
+                std::make_pair(CURVE_OID::NIST_384,      5),
+                std::make_pair(CURVE_OID::NIST_521,      5),
+                std::make_pair(CURVE_OID::BRAINPOOL_256, 9),
+                std::make_pair(CURVE_OID::BRAINPOOL_512, 9),
+                std::make_pair(CURVE_OID::ED_255,        9),
+                std::make_pair(CURVE_OID::CURVE_255,     10)
+        };
+#endif
+
         const std::map <std::string, uint8_t> NUMBER = {
             std::make_pair("RSA_ENCRYPT_OR_SIGN",   ID::RSA_ENCRYPT_OR_SIGN),
             std::make_pair("RSA_ENCRYPT_ONLY",      ID::RSA_ENCRYPT_ONLY),

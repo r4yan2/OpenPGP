@@ -77,19 +77,30 @@ void Key::read_common(const std::string & data, std::string::size_type & pos){
             mpi.push_back(read_MPI(data, pos)); //        DSA g
             mpi.push_back(read_MPI(data, pos)); //        DSA y
         }
-        //EdDSA
-        else if(pka == PKA::ID::EdDSA){
-            mpi.push_back(read_MPI(data, pos)); //        EdDSA p
-            mpi.push_back(read_MPI(data, pos)); //        EdDSA g
-            mpi.push_back(read_MPI(data, pos)); //        EdDSA y
-        }
         //ECDSA
-        else if (pka == PKA::ID::ECDSA){
-            throw std::error_code(KeyErrc::AlgorithmNotFound);
+        else if(pka == PKA::ID::ECDSA){
+            uint8_t curve_dim = data[pos];
+            curve = data.substr(pos + 1, curve_dim);
+            pos += curve_dim + 1;
+            mpi.push_back(read_MPI(data, pos));
+        }
+        //EdDSA
+        else if (pka == PKA::ID::EdDSA){
+            uint8_t curve_dim = data[pos];
+            curve = data.substr(pos + 1, curve_dim);
+            pos += curve_dim + 1;
+            mpi.push_back(read_MPI(data, pos));
+            // throw std::error_code(KeyErrc::AlgorithmNotFound);
         }
         //ECDH
         else if (pka == PKA::ID::ECDH){
-            throw std::error_code(KeyErrc::AlgorithmNotFound);
+            uint8_t curve_dim = data[pos];
+            curve = data.substr(pos + 1, curve_dim);
+            pos += curve_dim + 1;
+            mpi.push_back(read_MPI(data, pos));
+            kdf_params = data.substr((pos, 4));
+            pos += 4; // Jump over the KDF parameters
+            // throw std::error_code(KeyErrc::AlgorithmNotFound);
         }
         // ELGAMAL
         else if (pka == PKA::ID::ELGAMAL){
@@ -146,11 +157,11 @@ std::string Key::show_common(const std::size_t indents, const std::size_t indent
                    indent + tab + "ELGAMAL y (" + std::to_string(bitsize(mpi[2])) + " bits): " + mpitohex(mpi[2]);
         }
 #ifdef GPG_COMPATIBLE
-        else if (pka == PKA::ID::EdDSA){
+        /*else if (pka == PKA::ID::EdDSA){
             out += indent + tab + "EdDSA p (" + std::to_string(bitsize(mpi[0])) + " bits): " + mpitohex(mpi[0]) + "\n" +
                    indent + tab + "EdDSA g (" + std::to_string(bitsize(mpi[1])) + " bits): " + mpitohex(mpi[1]) + "\n" +
                    indent + tab + "EdDSA y (" + std::to_string(bitsize(mpi[2])) + " bits): " + mpitohex(mpi[2]);
-        }
+        }*/
 #endif
         else if (pka == PKA::ID::DSA){
             out += indent + tab + "DSA p (" + std::to_string(bitsize(mpi[0])) + " bits): " + mpitohex(mpi[0]) + "\n" +
@@ -171,9 +182,23 @@ std::string Key::raw_common() const{
 
     out += std::string(1, pka);
 
+#ifdef GPG_COMPATIBLE
+    if (pka == PKA::ID::ECDSA || pka == PKA::ID::EdDSA || pka == PKA::ID::ECDH){
+        out += std::string(1, PKA::CURVE_OID_LENGTH.at(curve));
+        out += curve;
+    }
+#endif
+
     for(MPI const m : mpi){
         out += write_MPI(m);
     }
+
+#ifdef GPG_COMPATIBLE
+    if (pka == PKA::ID::ECDH){
+        out += kdf_params;
+        
+    }
+#endif
 
     return out;
 }
@@ -246,7 +271,17 @@ std::string Key::get_keyid() const{
     return ""; // should never reach here; mainly just to remove compiler warnings
 }
 
-Tag::Ptr Key::clone() const{
+#ifdef GPG_COMPATIBLE
+std::string Key::get_curve() const{
+    return curve;
+}
+void Key::set_curve(const std::string c){
+    curve = c;
+}
+#endif
+
+
+        Tag::Ptr Key::clone() const{
     return std::make_shared <Key> (*this);
 }
 
