@@ -62,9 +62,6 @@ void Key::read_common(const std::string & data, std::string::size_type & pos){
         pka = data[pos + 5];
         pos += 6;
 
-
-#ifdef GPG_COMPATIBLE
-
         // RSA
         if(pka == PKA::ID::RSA_ENCRYPT_ONLY || pka == PKA::ID::RSA_ENCRYPT_OR_SIGN || pka == PKA::ID::RSA_SIGN_ONLY){
             mpi.push_back(read_MPI(data, pos));     // RSA n
@@ -77,6 +74,13 @@ void Key::read_common(const std::string & data, std::string::size_type & pos){
             mpi.push_back(read_MPI(data, pos)); //        DSA g
             mpi.push_back(read_MPI(data, pos)); //        DSA y
         }
+        // ELGAMAL
+        else if (pka == PKA::ID::ELGAMAL){
+            mpi.push_back(read_MPI(data, pos));     // ELGAMAL p
+            mpi.push_back(read_MPI(data, pos));     // ELGAMAL g
+            mpi.push_back(read_MPI(data, pos));     // ELGAMAL y
+        }
+#ifdef GPG_COMPATIBLE
         //ECDSA
         else if(pka == PKA::ID::ECDSA){
             uint8_t curve_dim = data[pos];
@@ -90,7 +94,6 @@ void Key::read_common(const std::string & data, std::string::size_type & pos){
             curve = data.substr(pos + 1, curve_dim);
             pos += curve_dim + 1;
             mpi.push_back(read_MPI(data, pos));
-            // throw std::error_code(KeyErrc::AlgorithmNotFound);
         }
         //ECDH
         else if (pka == PKA::ID::ECDH){
@@ -100,32 +103,11 @@ void Key::read_common(const std::string & data, std::string::size_type & pos){
             mpi.push_back(read_MPI(data, pos));
             kdf_params = data.substr((pos, 4));
             pos += 4; // Jump over the KDF parameters
-            // throw std::error_code(KeyErrc::AlgorithmNotFound);
         }
-        // ELGAMAL
-        else if (pka == PKA::ID::ELGAMAL){
-            mpi.push_back(read_MPI(data, pos));     // ELGAMAL p
-            mpi.push_back(read_MPI(data, pos));     // ELGAMAL g
-            mpi.push_back(read_MPI(data, pos));     // ELGAMAL y
-        }
+#endif
         else{
             throw std::error_code(KeyErrc::AlgorithmNotFound);
         }
-#else
-        // at minimum RSA
-        mpi.push_back(read_MPI(data, pos));     // RSA n, DSA p, ELGAMAL p
-        mpi.push_back(read_MPI(data, pos));     // RSA e, DSA q, ELGAMAL g
-
-        // DSA
-        if (pka == PKA::ID::DSA){
-            mpi.push_back(read_MPI(data, pos)); //        DSA g
-            mpi.push_back(read_MPI(data, pos)); //        DSA y
-        }
-        // ELGAMAL
-        else if (pka == PKA::ID::ELGAMAL){
-            mpi.push_back(read_MPI(data, pos)); //               ELGAMAL y
-        }
-#endif
     }
 }
 
@@ -157,11 +139,18 @@ std::string Key::show_common(const std::size_t indents, const std::size_t indent
                    indent + tab + "ELGAMAL y (" + std::to_string(bitsize(mpi[2])) + " bits): " + mpitohex(mpi[2]);
         }
 #ifdef GPG_COMPATIBLE
-        /*else if (pka == PKA::ID::EdDSA){
-            out += indent + tab + "EdDSA p (" + std::to_string(bitsize(mpi[0])) + " bits): " + mpitohex(mpi[0]) + "\n" +
-                   indent + tab + "EdDSA g (" + std::to_string(bitsize(mpi[1])) + " bits): " + mpitohex(mpi[1]) + "\n" +
-                   indent + tab + "EdDSA y (" + std::to_string(bitsize(mpi[2])) + " bits): " + mpitohex(mpi[2]);
-        }*/
+        else if (pka == PKA::ID::ECDSA){
+            out += indent + tab + "ECDSA " + PKA::CURVE_NAME.at(curve) + "\n" +
+                   indent + tab + "ECDSA ec point: " + mpitohex(mpi[0]);
+        }
+        else if (pka == PKA::ID::EdDSA){
+            out += indent + tab + "EdDSA " + PKA::CURVE_NAME.at(curve) + "\n" +
+                   indent + tab + "EdDSA ec point: " + mpitohex(mpi[0]);
+        }
+        else if (pka == PKA::ID::ECDH){
+            out += indent + tab + "ECDH " + PKA::CURVE_NAME.at(curve) + "\n" +
+                   indent + tab + "ECDH ec point: " + mpitohex(mpi[0]);
+        }
 #endif
         else if (pka == PKA::ID::DSA){
             out += indent + tab + "DSA p (" + std::to_string(bitsize(mpi[0])) + " bits): " + mpitohex(mpi[0]) + "\n" +
