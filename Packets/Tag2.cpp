@@ -310,6 +310,16 @@ std::string Tag2::show(const std::size_t indents, const std::size_t indent_size)
         out += "\n" + indent + tab + "DSA r (" + std::to_string(bitsize(mpi[0])) + " bits): " + mpitohex(mpi[0])
             += "\n" + indent + tab + "DSA s (" + std::to_string(bitsize(mpi[1])) + " bits): " + mpitohex(mpi[1]);
     }
+#ifdef GPG_COMPATIBLE
+    else if (pka == PKA::ID::ECDSA){
+        out += "\n" + indent + tab + "ECDSA r (" + std::to_string(bitsize(mpi[0])) + " bits): " + mpitohex(mpi[0])
+            += "\n" + indent + tab + "ECDSA s (" + std::to_string(bitsize(mpi[1])) + " bits): " + mpitohex(mpi[1]);
+    }
+    else if (pka == PKA::ID::EdDSA){
+        out += "\n" + indent + tab + "EdDSA r (" + std::to_string(bitsize(mpi[0])) + " bits): " + mpitohex(mpi[0])
+            += "\n" + indent + tab + "EdDSA s (" + std::to_string(bitsize(mpi[1])) + " bits): " + mpitohex(mpi[1]);
+    }
+#endif
 
     return out;
 }

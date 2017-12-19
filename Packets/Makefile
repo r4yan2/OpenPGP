@@ -1,6 +1,6 @@
 # Packets Makefile
 CXX?=g++
-CXXFLAGS=-std=c++11 -Werror -Wall -c -DAVOID_MEANINGFUL_CHECK
+CXXFLAGS=-std=c++11 -Wall -c -DAVOID_MEANINGFUL_CHECK
 
 include objects.mk
 

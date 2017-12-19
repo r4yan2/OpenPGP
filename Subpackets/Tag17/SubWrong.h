@@ -1,6 +1,5 @@
 /*
-Tag17Subpackets.h
-List of Tag 17 Subpacket headers
+SubWrong.h
 
 Copyright (c) 2013 - 2017 Jason Lee @ calccrypto at gmail.com
 
@@ -23,12 +22,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#ifndef __TAG17_SUBPACKETS__
-#define __TAG17_SUBPACKETS__
+#ifndef __TAG2_SUBWRONG__
+#define __TAG2_SUBWRONG__
 
-#include "Subpacket.h" // Base Type
+#include "Subpacket.h"
 
-#include "Sub1.h"      // Image Attribute
-#include "SubWrong.h"  // Wrong Subpacket Type
+namespace OpenPGP {
+    namespace Subpacket {
+        namespace Tag17 {
+            class SubWrong : public Sub {
+            private:
+                std::string data;
+
+            public:
+                typedef std::shared_ptr<SubWrong> Ptr;
+
+                SubWrong();
+
+                SubWrong(const uint8_t &t);
+
+                SubWrong(const std::string &data);
+
+                void read(const std::string &data);
+
+                std::string show(const std::size_t indents = 0, const std::size_t indent_size = 4) const;
+
+                std::string raw() const;
+
+                Sub::Ptr clone() const;
+            };
+        }
+    }
+}
 
 #endif
