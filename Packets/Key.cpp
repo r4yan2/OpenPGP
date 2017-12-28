@@ -191,7 +191,6 @@ std::string Key::raw_common() const{
     if (pka == PKA::ID::ECDSA || pka == PKA::ID::EdDSA || pka == PKA::ID::ECDH){
         out += std::string(1, PKA::CURVE_OID_LENGTH.at(hexlify(curve, true)));
         //out += curve.size();
-
         out += curve;
     }
 #endif
