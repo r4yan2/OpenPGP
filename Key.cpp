@@ -172,22 +172,24 @@ Key::pkey Key::get_pkey() const {
     Packet::Tag::Ptr lastUser_userAtt = nullptr;
     Packet::Tag::Ptr lastUserID = nullptr;
     Packet::Tag::Ptr lastSubkey = nullptr;
-    for (unsigned int i = 1; i < packets.size(); i++){
+    for(Packets::size_type i = 1; i < packets.size(); i++){
         switch(packets[i]->get_tag()){
-            case Packet::SIGNATURE: // Signature found
-                if (lastUser_userAtt == nullptr && lastSubkey == nullptr){
+            case Packet::SIGNATURE:
+                if (!lastUser_userAtt && !lastSubkey){
                     pk.keySigs.insert(std::make_pair(pk.key, packets[i]));
-                } else if (lastUser_userAtt != nullptr && lastSubkey == nullptr){
+                }
+                else if (lastUser_userAtt && !lastSubkey){
                     pk.uids.insert(std::make_pair(lastUser_userAtt, packets[i]));
-                } else if (lastUser_userAtt == nullptr && lastSubkey != nullptr){
+                }
+                else if (!lastUser_userAtt && lastSubkey){
                     pk.subKeys.insert(std::make_pair(lastSubkey, packets[i]));
-                } else{ // this should never happen
-                    pk.trashPackets.push_back(packets[i]);
-                    //throw std::logic_error("Some subkey lost during merge");
+                }
+                else{ // this should never happen
+                    throw std::logic_error("Some subkey lost during merge");
                 }
                 break;
             case Packet::USER_ATTRIBUTE: // UserAttributes found
-                if (lastUserID == nullptr){
+                if (!lastUserID){
                     pk.trashPackets.push_back(packets[i]);
                     continue;
                     //throw std::runtime_error("User attribute found without a UserID packet");
@@ -204,6 +206,7 @@ Key::pkey Key::get_pkey() const {
             case Packet::SECRET_SUBKEY:  // Secret subkey found
             case Packet::PUBLIC_SUBKEY: // Public subkey found
                 lastUser_userAtt = nullptr;
+                lastUserID = nullptr;
                 lastSubkey = packets[i];
                 break;
             default:
@@ -385,7 +388,17 @@ bool Key::meaningful() const{
     return meaningful(*this);
 }
 
-void Key::merge(Key::Ptr k){
+Key::Packets Key::get_elements_by_key(SigPairs::iterator first, SigPairs::iterator last, const Packet::Tag::Ptr &key){
+    Packets ps;
+    for (SigPairs::iterator it = first; it != last; it++){
+        if (it->first == key){
+            ps.push_back(it->second);
+        }
+    }
+    return ps;
+}
+
+void Key::merge(const Key::Ptr &k) {
     // Get pkey version from each key
     pkey pk1 = this->get_pkey();
     pkey pk2 = k->get_pkey();
@@ -404,15 +417,22 @@ void Key::merge(Key::Ptr k){
     // Building the new packets list extracting the packet from the joined sigpairs
     Packets new_packets;
     new_packets.push_back(pk1.key);
-    flatten(pk1.keySigs, &new_packets, pk1.uid_userAtt);
+    for (std::pair<const Packet::Tag::Ptr, Packet::Tag::Ptr> ks: pk1.keySigs){
+        if (std::find(new_packets.begin(), new_packets.end(), ks.second) == new_packets.end()){
+            new_packets.push_back(ks.second);
+        }
+    }
+    //flatten(pk1.keySigs, &new_packets, pk1.uid_userAtt);
     flatten(pk1.uids, &new_packets, pk1.uid_userAtt);
     flatten(pk1.subKeys, &new_packets, pk1.uid_userAtt);
-    for (auto &tp: pk1.trashPackets){
-        new_packets.push_back(tp);
+    for (const Packet::Tag::Ptr &tp: pk1.trashPackets){
+        if (std::find(new_packets.begin(), new_packets.end(), tp) == new_packets.end()){
+            new_packets.push_back(tp);
+        }
     }
 
     // Set the new packets list
-    set_packets_clone(new_packets);
+    set_packets(new_packets);
 
 #ifndef AVOID_MEANINGFUL_CHECK
     if (!meaningful()){
@@ -420,7 +440,6 @@ void Key::merge(Key::Ptr k){
     }
 #endif
 }
-
 
 void Key::flatten(SigPairs sp, Packets *np, SigPairs ua_table){
     for(SigPairs::iterator i = sp.begin(); i != sp.end(); i++){
@@ -435,11 +454,13 @@ void Key::flatten(SigPairs sp, Packets *np, SigPairs ua_table){
 
         // Push back the "key" of the map and get all the referred objects
         np->push_back(i->first);
-        std::pair<SigPairs::iterator, SigPairs::iterator> range = sp.equal_range(i->first);
+        Packets elements = get_elements_by_key(sp.begin(), sp.end(), i->first);
 
-        for(SigPairs::iterator j = range.first; j != range.second; ++j){
+        for(const Packet::Tag::Ptr &p : elements){
             // insert the referred object
-            np->push_back(j->second);
+            if (std::find(np->begin(), np->end(), p) == np->end()){
+                np->push_back(p);
+            }
         }
 
         // If inserting UID search (and insert) also user attributes and its signatures

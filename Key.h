@@ -26,56 +26,28 @@ THE SOFTWARE.
 #ifndef __OPENPGP_KEY__
 #define __OPENPGP_KEY__
 
+#include <algorithm>
+#include <functional>
 #include <set>
+
 #include "Packets/packets.h"
 #include "PKA/PKAs.h"
 #include "PGP.h"
 
-/* ERROR HANDLING SHOULD BE IN ANOTHER FILE */
-/*
-#include <system_error>
-
-
-enum class KeyErrc{
-    NotExistingVersion      = 1,    // "Error: Version should be 2, 3 or 4"
-    BadKey                  = 2,    // "Error: Bad key type: " + std::to_string(pgp.get_type()) + "\n"
-    NotEnoughPackets        = 3,    // "Error: Not enough packets (minimum 2).\n"
-    FirstPacketWrong        = 4,    // "Error: First packet is not a " + Packet::NAME.at(key) + ".\n"
-    SignAfterPrimary        = 5,    // "Error: Packet " + std::to_string(i) + " following " + Packet::NAME.at(key) + " is not a key revocation signature.\n"
-    AtLeastOneUID           = 6,    // "Error: Needed at least one UserID"
-    NotUserID               = 7,    // "Error: Packet is not a User ID or User Attribute Packet.\n"
-    WrongSignature          = 8,    // "Error: Signature is not a certification or revocation."
-    NoSubkeyFound           = 9,    // "Error: Bad subkey packet.\n"
-    Ver3Subkey              = 10,   // "Error: Version 3 keys MUST NOT have subkeys.\n";
-    NoSubkeyBinding         = 11,   // "Error: No " + Signature_Type::NAME.at(Signature_Type::SUBKEY_BINDING_SIGNATURE) + " packet found following subkey.\n"
-    NotAllPacketsAnalyzed   = 12,   // "Error: the index should be at the end of the packets"
-    NotAPublicKey           = 13,   // "Error: ASCII Armor type is not PUBLIC_KEY_BLOCK.\n"
-    NotASecretKey           = 14,   // "Error: ASCII Armor type is not SECRET_KEY_BLOCK.\n"
-    DifferentKeys           = 15    // "Error: Merge not possible between two different keys
-};
-namespace std{
-    template <>
-    struct is_error_code_enum<KeyErrc> : true_type {};
-}
-
-std::error_code make_error_code(KeyErrc);
-*/
-/* END ERROR HANDLING */
-
-
-
 namespace OpenPGP {
     class Key : public PGP {
         public:
-            typedef std::multimap<Packet::Tag::Ptr, Packet::Tag::Ptr> SigPairs; // Map between two packets
+            // Map between two packets
+            typedef std::multimap <Packet::Tag::Ptr, Packet::Tag::Ptr> SigPairs;
 
-            struct pkey{ // struct contains mapping between packets and relative signatures
+            // struct contains mapping between packets and relative signatures
+            struct pkey{
                 Packet::Tag::Ptr key;   // Primary Key
                 SigPairs keySigs;       // Map between Primary Key and Signatures
                 SigPairs uids;          // Map between User (include UserID and User Attributes) and Signatures
                 SigPairs subKeys;       // Map between Subkeys and Signatures
                 SigPairs uid_userAtt;   // Map between UserID and User Attributes
-                std::vector<Packet::Tag::Ptr> trashPackets;
+                Packets trashPackets;
             };
         private:
             // for listing keys
@@ -88,6 +60,7 @@ namespace OpenPGP {
 
             // Extract Packet from sp pushing them in np
             void flatten(SigPairs sp, Packets *np, SigPairs ua_table);
+            Packets get_elements_by_key(SigPairs::iterator first, SigPairs::iterator last, const Packet::Tag::Ptr &key);
 
         public:
             typedef std::shared_ptr <Key> Ptr;
