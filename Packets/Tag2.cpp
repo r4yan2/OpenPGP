@@ -368,7 +368,7 @@ PKA::Values Tag2::get_mpi() const{
 
 std::array <uint32_t, 3> Tag2::get_times() const{
     std::array <uint32_t, 3> times = {0, 0, 0};
-    if (version == 3){
+    if (version == 3 || version == 2){
         times[0] = time;
     }
     else if (version == 4){
@@ -418,7 +418,7 @@ std::array <uint32_t, 3> Tag2::get_times() const{
 }
 
 std::string Tag2::get_keyid() const{
-    if (version == 3){
+    if (version == 3 || version == 2){
         return keyid;
     }
     else if (version == 4){
@@ -468,7 +468,7 @@ Tag2::Subpackets Tag2::get_unhashed_subpackets_clone() const{
 }
 
 std::string Tag2::get_up_to_hashed() const{
-    if (version == 3){
+    if (version == 3 || version == 2){
         return "\x03" + std::string(1, type) + unhexlify(makehex(time, 8));
     }
     else if (version == 4){
@@ -528,7 +528,7 @@ void Tag2::set_mpi(const PKA::Values & m){
 }
 
 void Tag2::set_time(const uint32_t t){
-    if (version == 3){
+    if (version == 3 || version == 2){
         time = t;
     }
     else if (version == 4){
@@ -555,7 +555,7 @@ void Tag2::set_keyid(const std::string & k){
         throw std::runtime_error("Error: Key ID must be 8 octets.");
     }
 
-    if (version == 3){
+    if (version == 3 || version == 2){
         keyid = k;
     }
     else if (version == 4){

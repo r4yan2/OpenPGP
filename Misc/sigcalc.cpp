@@ -8,7 +8,7 @@ std::string addtrailer(const std::string & data, const Packet::Tag2::Ptr & sig){
     }
 
     const std::string trailer = sig -> get_up_to_hashed();
-    if (sig -> get_version() == 3){
+    if (sig -> get_version() == 3 || sig -> get_version() == 2){
         return data + trailer.substr(1, trailer.size() - 1); // remove version from trailer
     }
     else if (sig -> get_version() == 4){
@@ -35,7 +35,7 @@ std::string certification(uint8_t version, const Packet::User::Ptr & id){
         throw std::runtime_error("Error: No ID packet.");
     }
 
-    if (version == 3){
+    if (version == 3 || version == 2){
         return id -> raw();
     }
     else if (version == 4){
@@ -101,7 +101,7 @@ std::string to_sign_02(const Packet::Tag2::Ptr & tag2){
         throw std::runtime_error("Error: No signature packet");
     }
 
-    if (tag2 -> get_version() == 3){
+    if (tag2 -> get_version() == 3 || tag2 -> get_version() == 2){
         throw std::runtime_error("Error: It does not make sense to have a V3 standalone signature.");
     }
     return Hash::use(tag2 -> get_hash(), addtrailer("", tag2));

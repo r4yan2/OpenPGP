@@ -339,7 +339,7 @@ bool Key::meaningful(const PGP & pgp){
             throw std::error_code(KeyErrc::NoSubkeyFound);
         }
 
-        if (primary_key_version == 3){
+        if (primary_key_version == 3 || primary_key_version == 2){
             throw std::error_code(KeyErrc::Ver3Subkey);
         }
 
@@ -388,7 +388,7 @@ bool Key::meaningful() const{
     return meaningful(*this);
 }
 
-Key::Packets Key::get_elements_by_key(SigPairs::iterator first, SigPairs::iterator last, const Packet::Tag::Ptr &key){
+Key::Packets Key::get_elements_by_key (const SigPairs::iterator first, const SigPairs::iterator last, const Packet::Tag::Ptr &key) const{
     Packets ps;
     for (SigPairs::iterator it = first; it != last; it++){
         if (it->first == key){
@@ -463,18 +463,23 @@ void Key::flatten(SigPairs sp, Packets *np, SigPairs ua_table){
             }
         }
 
-        // If inserting UID search (and insert) also user attributes and its signatures
-        if (i->first->get_tag() == Packet::USER_ID && ua_table.find(i->first) != ua_table.end()){
-            std::pair<SigPairs::iterator, SigPairs::iterator> ua_range = sp.equal_range(ua_table.find(i->first)->second);
+        if (i->first->get_tag() == Packet::USER_ID){
+            Packets ua_list = get_elements_by_key(ua_table.begin(), ua_table.end(), i->first);
+            for (const Packet::Tag::Ptr &ua: ua_list){
+                if (std::find(np->begin(), np->end(), ua) == np->end()){
+                    np->push_back(ua);
 
-            np->push_back(ua_range.first->first);
-            for (SigPairs::iterator j = ua_range.first; j != ua_range.second; j++){
-                np->push_back(j->second);
+                    Packets ua_elements = get_elements_by_key(sp.begin(), sp.end(), ua);
+                    for (const Packet::Tag::Ptr &p: ua_elements){
+                        if (std::find(np->begin(), np->end(), p) == np->end()){
+                            np->push_back(p);
+                        }
+                    }
+                }
             }
         }
     }
 }
-
 
 PGP::Ptr Key::clone() const{
     return std::make_shared <Key> (*this);
