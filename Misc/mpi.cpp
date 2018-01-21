@@ -69,6 +69,9 @@ MPI nextprime(const MPI &a){
 }
 
 MPI powm(const MPI &base, const MPI &exp, const MPI &mod){
+    if (exp == 0){
+        return 1;
+    }
     MPI ret;
     mpz_powm_sec(ret.get_mpz_t(), base.get_mpz_t(), exp.get_mpz_t(), mod.get_mpz_t());
     return ret;
@@ -87,6 +90,30 @@ MPI random(unsigned int bits){
         RNG::BBS(static_cast <MPI> (static_cast <unsigned int> (now()))); // seed just in case not seeded
         return bintompi(RNG::BBS().rand(bits));
     }
+}
+
+MPI phi(MPI n){
+    MPI result = n;   // Initialize result as n
+
+    // Consider all prime factors of n and subtract their
+    // multiples from result
+    for (MPI p=2; p*p<=n; ++p){
+        // Check if p is a prime factor.
+        if (n % p == 0){
+            // If yes, then update n and result
+            while (n % p == 0){
+                n /= p;
+            }
+            result -= result / p;
+        }
+    }
+
+    // If n has a prime factor greater than sqrt(n)
+    // (There can be at-most one such prime factor)
+    if (n > 1){
+        result -= result / n;
+    }
+    return result;
 }
 
 // given some value, return the formatted mpi
