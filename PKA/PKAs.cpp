@@ -30,6 +30,20 @@ bool is_RSA(const uint8_t alg){
             (alg == ID::RSA_SIGN_ONLY));
 }
 
+bool right_curve(const uint8_t alg, const std::string &OID){
+    switch (alg){
+        case PKA::ID::ECDSA:
+            return OID != CURVE_OID::ED_255 && OID != CURVE_OID::CURVE_255;
+        case PKA::ID::EdDSA:
+            return OID == CURVE_OID::ED_255;
+        case PKA::ID::ECDH:
+            return OID == CURVE_OID::CURVE_255;
+        default:
+            throw std::runtime_error("Not Curve Algorithm:" + PKA::NAME.at(alg));
+    }
+}
+
+
 Params generate_params(const uint8_t pka, const std::size_t bits){
     Params params = {bits};
 
