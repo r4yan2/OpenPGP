@@ -56,7 +56,6 @@ namespace OpenPGP {
     MPI nextprime(const MPI & a);
     MPI powm(const MPI & base, const MPI & exp, const MPI & mod);
     MPI invert(const MPI & a, const MPI & b);
-    MPI phi(MPI n);
 
     MPI random(unsigned int bits);
 
