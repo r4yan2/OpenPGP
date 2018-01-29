@@ -431,15 +431,15 @@ void Key::merge(const Key::Ptr &k) {
         if (std::find(new_packets.begin(), new_packets.end(), p) == new_packets.end()){
             new_packets.push_back(p);
             // Insert the relative user attributes with its signatures
-            Packets ua_list = get_elements_by_key(ua_table.begin(), ua_table.end(), p);
+            Packets ua_list = get_elements_by_key(pk1.uid_userAtt.begin(), pk1.uid_userAtt.end(), p);
             for (const Packet::Tag::Ptr &ua: ua_list){
-                if (std::find(new_packets->begin(), new_packets->end(), ua) == new_packets->end()){
-                    new_packets->push_back(ua);
+                if (std::find(new_packets.begin(), new_packets.end(), ua) == new_packets.end()){
+                    new_packets.push_back(ua);
 
                     Packets ua_signatures = get_elements_by_key(pk1.uids.begin(), pk1.uids.end(), ua);
                     for (const Packet::Tag::Ptr &s: ua_signatures){
-                        if (std::find(new_packets->begin(), new_packets->end(), s) == new_packets->end()){
-                            new_packets->push_back(s);
+                        if (std::find(new_packets.begin(), new_packets.end(), s) == new_packets.end()){
+                            new_packets.push_back(s);
                         }
                     }
                 }
