@@ -37,7 +37,7 @@ bool right_curve(const uint8_t alg, const std::string &OID){
         case PKA::ID::EdDSA:
             return OID == CURVE_OID::ED_255;
         case PKA::ID::ECDH:
-            return OID == CURVE_OID::CURVE_255;
+            return OID != CURVE_OID::ED_255;
         default:
             throw std::runtime_error("Not Curve Algorithm:" + PKA::NAME.at(alg));
     }
