@@ -29,20 +29,24 @@ bool is_RSA(const uint8_t alg){
             (alg == ID::RSA_ENCRYPT_ONLY)    ||
             (alg == ID::RSA_SIGN_ONLY));
 }
-
+#ifdef GPG_COMPATIBLE
 bool right_curve(const uint8_t alg, const std::string &OID){
     switch (alg){
         case PKA::ID::ECDSA:
-            return OID != CURVE_OID::ED_255 && OID != CURVE_OID::CURVE_255;
+            return is_EC(OID);
         case PKA::ID::EdDSA:
             return OID == CURVE_OID::ED_255;
         case PKA::ID::ECDH:
-            return OID == CURVE_OID::CURVE_255;
+            return OID == CURVE_OID::CURVE_255 || is_EC(OID);
         default:
             throw std::runtime_error("Not Curve Algorithm:" + PKA::NAME.at(alg));
     }
 }
-
+bool is_EC(const std::string &OID) {
+    return OID == CURVE_OID::NIST_256 || OID == CURVE_OID::NIST_384 || OID == CURVE_OID::NIST_521 ||
+           OID == CURVE_OID::BRAINPOOL_256 || OID == CURVE_OID::BRAINPOOL_512;
+}
+#endif
 
 Params generate_params(const uint8_t pka, const std::size_t bits){
     Params params = {bits};
