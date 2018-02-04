@@ -168,8 +168,8 @@ namespace OpenPGP {
         bool can_sign(const uint8_t alg);
         bool is_RSA(const uint8_t alg);
         #ifdef GPG_COMPATIBLE
-        bool right_curve(const uint8_t alg, const std::string &OID);
-        bool is_EC(const std::string &OID);
+        bool right_curve(const uint8_t &alg,std::string OID);
+        bool is_EC(std::string OID);
         #endif
 
         /*
