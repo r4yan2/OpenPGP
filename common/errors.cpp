@@ -8,13 +8,18 @@ namespace { // anonymous namespace
         std::string message(int ev) const override;
     };
 
+
+
     const char* KeyErrCategory::name() const noexcept{
         return "key";
     }
 
+    const char* ParsingErrCategory::name() const noexcept{
+        return "Parsing";
+    }
+
     std::string KeyErrCategory::message(int ev) const{
-        switch (static_cast<KeyErrc>(ev))
-        {
+        switch (static_cast<KeyErrc>(ev)){
             case KeyErrc::BadKey:
                 return "Error: packet is not a PGP Key.";
 
@@ -60,19 +65,52 @@ namespace { // anonymous namespace
             case KeyErrc::DifferentKeys:
                 return "Error: Merge not possible between two different keys";
 
-            case KeyErrc::ParsingError:
+            default:
+                return "Not recognized error";
+        }
+        //return "Not recognized error";
+    }
+
+    std::string ParsingErrCategory::message(int ev) const{
+        switch (static_cast<ParsingErrc>(ev)){
+            case ParsingErrc::ParsingError:
                 return "Error: Could not parse data";
 
-            case KeyErrc::AlgorithmNotFound:
-                return "Error: Algorithm for public key not found";
+            case ParsingErrc::PubkeyAlgorithmNotFound:
+                return "Error: Public key Algorithm not found";
 
+            case ParsingErrc::PubkeyVersionNotFound:
+                return "Error: Public key Version not found";
+
+            case ParsingErrc::LengthLEQZero:
+                return "Error: Length of packet";
+
+            case ParsingErrc::SignaturePKANotFound:
+                return "Error: Signature PKA not found";
+
+            case ParsingErrc::SignatureHashNotFound:
+                return "Error: Signature HASH not found";
+
+            case ParsingErrc::SignatureVersionNotFound:
+                return "Error: Signature Version not found";
+
+            case ParsingErrc::SignatureLengthWrong:
+                return "Error: Length of hashed material must be 5";
+
+            default:
+                return "Not recognized error";
         }
-        return "Not recognized error";
     }
+
     const KeyErrCategory theKeyErrCategory{};
+    //const ParsingErrCategory theParsingErrCategory;
 
 }
 
 std::error_code make_error_code(KeyErrc e) {
     return {static_cast<int>(e), theKeyErrCategory};
+}
+
+std::error_code make_error_code(ParsingErrc e, uint16_t info) {
+    return {static_cast<int>(e), ParsingErrCategory(info)};
 }

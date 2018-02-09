@@ -1,4 +1,5 @@
 #include "Tag2.h"
+#include "../common/errors.h"
 
 namespace OpenPGP {
 namespace Packet {
@@ -175,7 +176,8 @@ void Tag2::read(const std::string & data){
     version = data[0];
     if (version < 4){
         if (data[1] != 5){
-            throw std::runtime_error("Error: Length of hashed material must be 5.");
+            throw make_error_code(ParsingErrc::SignatureLengthWrong, data[1]);
+            //throw std::runtime_error("Error: Length of hashed material must be 5.");
         }
         type   = data[2];
         time   = toint(data.substr(3, 4), 256);
@@ -190,18 +192,19 @@ void Tag2::read(const std::string & data){
             mpi.push_back(read_MPI(data, pos)); // RSA m**d mod n
         }
         #ifdef GPG_COMPATIBLE
-        else if(pka == PKA::ID::DSA || pka == PKA::ID::ECDSA){
+        else if(pka == PKA::ID::DSA || pka == PKA::ID::ECDSA || pka == PKA::ID::ELGAMAL){
             mpi.push_back(read_MPI(data, pos)); // r
             mpi.push_back(read_MPI(data, pos)); // s
         }
         #else
-        else if (pka == PKA::ID::DSA){
+        else if (pka == PKA::ID::DSA || pka == PKA::ID::ELGAMAL){
             mpi.push_back(read_MPI(data, pos)); // DSA r
             mpi.push_back(read_MPI(data, pos)); // DSA s
         }
         #endif
         else{
-            throw std::runtime_error("Error: Unknown PKA type: " + std::to_string(pka));
+            throw make_error_code(ParsingErrc::SignaturePKANotFound, pka);
+            //throw std::runtime_error("Error: Unknown PKA type: " + std::to_string(pka));
         }
     }
     else if (version == 4){
@@ -222,21 +225,28 @@ void Tag2::read(const std::string & data){
 
 //        if (PKA::is_RSA(PKA))
         std::string::size_type pos = hashed_size + 6 + 2 + unhashed_size + 2;
-        mpi.push_back(read_MPI(data, pos));         // RSA m**d mod n
+        if (PKA::is_RSA(pka)){
+            mpi.push_back(read_MPI(data, pos)); // RSA m**d mod n
+        }
         #ifdef GPG_COMPATIBLE
-        if(pka == PKA::ID::DSA || pka == PKA::ID::ECDSA || pka == PKA::ID::EdDSA){
-            // mpi.push_back(read_MPI(data, pos)); // r
+        else if(pka == PKA::ID::DSA || pka == PKA::ID::ECDSA || pka == PKA::ID::EdDSA || pka == PKA::ID::ELGAMAL){
+            mpi.push_back(read_MPI(data, pos)); // r
             mpi.push_back(read_MPI(data, pos)); // s
         }
         #else
-        if (pka == PKA::ID::DSA){
-            // mpi.push_back(read_MPI(data, pos)); // DSA r
+        else if (pka == PKA::ID::DSA || pka == PKA::ID::ELGAMAL){
+            mpi.push_back(read_MPI(data, pos)); // DSA r
             mpi.push_back(read_MPI(data, pos)); // DSA s
         }
         #endif
+        else{
+            throw make_error_code(ParsingErrc::SignaturePKANotFound, pka);
+            //throw std::runtime_error("Error: Unknown PKA type: " + std::to_string(pka));
+        }
     }
     else{
-        throw std::runtime_error("Error: Tag2 Unknown version: " + std::to_string(static_cast <unsigned int> (version)));
+        throw make_error_code(ParsingErrc::SignatureVersionNotFound, version);
+        //throw std::runtime_error("Error: Tag2 Unknown version: " + std::to_string(version));
     }
 }
 

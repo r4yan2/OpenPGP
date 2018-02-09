@@ -1,6 +1,16 @@
 #include <system_error>
 
 
+namespace {
+    struct ParsingErrCategory : std::error_category{
+        const char* name() const noexcept override;
+        std::string message(int ev) const override;
+        const uint16_t info;
+
+        ParsingErrCategory(uint16_t i): info(i) {};
+    };
+}
+
 enum class KeyErrc{
     NotExistingVersion      = 1,    // "Error: Version should be 2, 3 or 4"
     BadKey                  = 2,    // "Error: Bad key type: " + std::to_string(pgp.get_type()) + "\n"
@@ -17,12 +27,25 @@ enum class KeyErrc{
     NotAPublicKey           = 13,   // "Error: ASCII Armor type is not PUBLIC_KEY_BLOCK.\n"
     NotASecretKey           = 14,   // "Error: ASCII Armor type is not SECRET_KEY_BLOCK.\n"
     DifferentKeys           = 15,   // "Error: Merge not possible between two different keys\n"
-    ParsingError            = 16,   // "Error: error during parsing data\n"
-    AlgorithmNotFound       = 17    // "Error: Algorithm for public key not found\n"
 };
+
+enum class ParsingErrc{
+    ParsingError            = 31,   // "Error: error during parsing data\n"
+    PubkeyAlgorithmNotFound = 32,   // "Error: Public key Algorithm not found\n"
+    PubkeyVersionNotFound   = 33,   // "Error: Public key version not found\n"
+    LengthLEQZero           = 34,   // "Error: Length of packet <= 0\n"
+    SignaturePKANotFound    = 35,   // "Error: Signature PKA not found\n"
+    SignatureHashNotFound   = 36,   // "Error: Signature HASH not found\n"
+    SignatureVersionNotFound = 37,   // "Error: Signature version not found\n"
+    SignatureLengthWrong    = 38,   // "Error: Length of hashed material must be 5.\n"
+};
+
 namespace std{
     template <>
     struct is_error_code_enum<KeyErrc> : true_type {};
+    template <>
+    struct is_error_code_enum<ParsingErrc> : true_type {};
 }
 
 std::error_code make_error_code(KeyErrc);
+std::error_code make_error_code(ParsingErrc, uint16_t);

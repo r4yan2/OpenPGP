@@ -1,4 +1,5 @@
 #include "PGP.h"
+#include "common/errors.h"
 
 namespace OpenPGP {
 
@@ -115,15 +116,15 @@ uint8_t PGP::read_packet_header(const std::string & data, std::string::size_type
 }
 
 Packet::Tag::Ptr PGP::read_packet_raw(const bool format, const uint8_t tag, uint8_t & partial, const std::string & data, std::string::size_type & pos, const std::string::size_type & length) const{
+    if (length < 1){
+        throw make_error_code(ParsingErrc::LengthLEQZero, tag);
+    }
     Packet::Tag::Ptr out;
     if (partial > 1){
         out = std::make_shared <Packet::Partial> ();
     }
     else{
-        if (tag == Packet::RESERVED){
-            throw std::runtime_error("Error: Tag number MUST NOT be 0.");
-        }
-        else if (tag == Packet::PUBLIC_KEY_ENCRYPTED_SESSION_KEY){
+        if (tag == Packet::PUBLIC_KEY_ENCRYPTED_SESSION_KEY){
             out = std::make_shared <Packet::Tag1> ();
         }
         else if (tag == Packet::SIGNATURE){
@@ -187,7 +188,9 @@ Packet::Tag::Ptr PGP::read_packet_raw(const bool format, const uint8_t tag, uint
             out = std::make_shared <Packet::Tag63> ();
         }
         else{
-            throw std::runtime_error("Error: Tag not defined: " + std::to_string(tag) + ".");
+            out = std::make_shared<Packet::TagNotValid> ();
+            std::cerr << "Warning Found private/reserver Packet: " << std::to_string(tag) << std::endl;
+            //throw std::runtime_error("Error: Tag not defined: " + std::to_string(tag) + ".");
         }
     }
 

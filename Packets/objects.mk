@@ -23,4 +23,5 @@ PACKETS_OBJECTS=Packet.o   \
                 Tag60.o    \
                 Tag61.o    \
                 Tag62.o    \
-                Tag63.o
+                Tag63.o    \
+                TagNotValid.o
