@@ -117,7 +117,7 @@ uint8_t PGP::read_packet_header(const std::string & data, std::string::size_type
 
 Packet::Tag::Ptr PGP::read_packet_raw(const bool format, const uint8_t tag, uint8_t & partial, const std::string & data, std::string::size_type & pos, const std::string::size_type & length) const{
     if (length < 1){
-        throw make_error_code(ParsingErrc::LengthLEQZero, tag);
+        throw std::error_code(ParsingErrc::LengthLEQZero);
     }
     Packet::Tag::Ptr out;
     if (partial > 1){

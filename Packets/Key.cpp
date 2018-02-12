@@ -122,11 +122,11 @@ void Key::read_common(const std::string & data, std::string::size_type & pos){
         }
         #endif
         else{
-            throw make_error_code(ParsingErrc::PubkeyAlgorithmNotFound, tag);
+            throw std::error_code(ParsingErrc::PubkeyAlgorithmNotFound);
         }
     }
     else{
-        throw make_error_code(ParsingErrc::PubkeyVersionNotFound, tag);
+        throw std::error_code(ParsingErrc::PubkeyVersionNotFound);
     }
 }
 

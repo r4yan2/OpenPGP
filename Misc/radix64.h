@@ -94,6 +94,17 @@ namespace OpenPGP {
     //       pad characters (=) are added to the output.
     const unsigned int MAX_LINE_LENGTH = 64;
 
+
+    const std::string base64_chars =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                    "abcdefghijklmnopqrstuvwxyz"
+                    "0123456789+/";
+
+
+    inline bool is_base64(unsigned char c) {
+        return (isalnum(c) || (c == '+') || (c == '/'));
+    }
+
     std::string ascii2radix64(std::string str, const unsigned char char62 = '+', const unsigned char char63 = '/');
 
     // 6.4.  Decoding Radix-64

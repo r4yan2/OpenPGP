@@ -3,6 +3,11 @@
 
 namespace { // anonymous namespace
 
+    struct ParsingErrCategory : std::error_category{
+        const char* name() const noexcept override;
+        std::string message(int ev) const override;
+    };
+
     struct KeyErrCategory : std::error_category{
         const char* name() const noexcept override;
         std::string message(int ev) const override;
@@ -103,7 +108,7 @@ namespace { // anonymous namespace
     }
 
     const KeyErrCategory theKeyErrCategory{};
-    //const ParsingErrCategory theParsingErrCategory;
+    const ParsingErrCategory theParsingErrCategory{};
 
 }
 
@@ -111,6 +116,6 @@ std::error_code make_error_code(KeyErrc e) {
     return {static_cast<int>(e), theKeyErrCategory};
 }
 
-std::error_code make_error_code(ParsingErrc e, uint16_t info) {
-    return {static_cast<int>(e), ParsingErrCategory(info)};
+std::error_code make_error_code(ParsingErrc e) {
+    return {static_cast<int>(e), theParsingErrCategory};
 }

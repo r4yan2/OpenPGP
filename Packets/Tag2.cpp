@@ -176,7 +176,7 @@ void Tag2::read(const std::string & data){
     version = data[0];
     if (version < 4){
         if (data[1] != 5){
-            throw make_error_code(ParsingErrc::SignatureLengthWrong, data[1]);
+            throw std::error_code(ParsingErrc::SignatureLengthWrong);
             //throw std::runtime_error("Error: Length of hashed material must be 5.");
         }
         type   = data[2];
@@ -203,7 +203,7 @@ void Tag2::read(const std::string & data){
         }
         #endif
         else{
-            throw make_error_code(ParsingErrc::SignaturePKANotFound, pka);
+            throw std::error_code(ParsingErrc::SignaturePKANotFound);
             //throw std::runtime_error("Error: Unknown PKA type: " + std::to_string(pka));
         }
     }
@@ -240,12 +240,12 @@ void Tag2::read(const std::string & data){
         }
         #endif
         else{
-            throw make_error_code(ParsingErrc::SignaturePKANotFound, pka);
+            throw std::error_code(ParsingErrc::SignaturePKANotFound);
             //throw std::runtime_error("Error: Unknown PKA type: " + std::to_string(pka));
         }
     }
     else{
-        throw make_error_code(ParsingErrc::SignatureVersionNotFound, version);
+        throw std::error_code(ParsingErrc::SignatureVersionNotFound);
         //throw std::runtime_error("Error: Tag2 Unknown version: " + std::to_string(version));
     }
 }

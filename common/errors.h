@@ -1,16 +1,5 @@
 #include <system_error>
 
-
-namespace {
-    struct ParsingErrCategory : std::error_category{
-        const char* name() const noexcept override;
-        std::string message(int ev) const override;
-        const uint16_t info;
-
-        ParsingErrCategory(uint16_t i): info(i) {};
-    };
-}
-
 enum class KeyErrc{
     NotExistingVersion      = 1,    // "Error: Version should be 2, 3 or 4"
     BadKey                  = 2,    // "Error: Bad key type: " + std::to_string(pgp.get_type()) + "\n"
@@ -48,4 +37,4 @@ namespace std{
 }
 
 std::error_code make_error_code(KeyErrc);
-std::error_code make_error_code(ParsingErrc, uint16_t);
+std::error_code make_error_code(ParsingErrc);
