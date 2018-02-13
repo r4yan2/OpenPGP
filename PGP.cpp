@@ -365,6 +365,10 @@ void PGP::read_raw(const std::string & data){
     std::string::size_type pos = 0;
     while (pos < data.size()){
         Packet::Tag::Ptr packet = read_packet(data, pos, partial);
+        std::ofstream myfile;
+        myfile.open ("key_rotta.asc", std::ios::binary | std::ios::app);
+        myfile << packet->raw();
+        myfile.close();
         if (packet){
             packets.push_back(packet);
         }
