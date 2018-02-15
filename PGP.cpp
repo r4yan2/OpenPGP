@@ -365,6 +365,7 @@ void PGP::read_raw(const std::string & data){
     std::string::size_type pos = 0;
     while (pos < data.size()){
         Packet::Tag::Ptr packet = read_packet(data, pos, partial);
+
         if (packet){
             packets.push_back(packet);
         }

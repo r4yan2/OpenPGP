@@ -66,7 +66,7 @@ void Key::read_common(const std::string & data, std::string::size_type & pos){
     time = toint(data.substr(pos + 1, 4), 256);
 
     if (version < 4){
-        expire = (data[pos + 5] << 8) + data[pos + 6];
+        expire = (data[pos + 5] << 8) + (unsigned char)data[pos + 6];
         pka = data[pos + 7];
         pos += 8;
         mpi.push_back(read_MPI(data, pos));     // RSA n

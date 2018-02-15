@@ -1,6 +1,10 @@
 #include "radix64.h"
 
-namespace OpenPGP {/*
+namespace OpenPGP {
+
+    /**
+     * Found here: https://renenyffenegger.ch/notes/development/Base64/Encoding-and-decoding-base-64-with-cpp
+     * */
     std::string ascii2radix64(std::string str, const unsigned char char62, const unsigned char char63){
         std::string ret;
         char const* bytes_to_encode = str.c_str();
@@ -86,7 +90,7 @@ namespace OpenPGP {/*
         return ret;
     }
 
-*/
+/*
 std::string ascii2radix64(std::string str, const unsigned char char62, const unsigned char char63){
     std::string out = "", bin = "", pad = "";
     while (str.size() % 3){
@@ -159,5 +163,5 @@ std::string radix642ascii(std::string str, const unsigned char char62, const uns
 
     return str.substr(0, str.size() - unpad);   // remove padding when returning
 }
-
+*/
 }
