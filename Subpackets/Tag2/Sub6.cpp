@@ -28,7 +28,7 @@ std::string Sub6::show(const std::size_t indents, const std::size_t indent_size)
 }
 
 std::string Sub6::raw() const{
-    return regex + zero; // might not need '+ zero'
+    return regex; // + zero; // might not need '+ zero'
 }
 
 std::string Sub6::get_regex() const{

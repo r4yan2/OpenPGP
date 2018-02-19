@@ -85,7 +85,7 @@ std::string Tag::write_new_length(const std::string & data) const{
         if (length < 192){                                  // 1 octet
             out += std::string(1, length);
         }
-        else if ((192 <= length) && (length < 8383)){       // 2 octets
+        else if ((192 <= length) && (length <= 8383)){       // 2 octets
             length -= 0xc0;
             out += std::string(1, (length >> 8) + 0xc0 ) + std::string(1, length & 0xff);
         }

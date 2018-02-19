@@ -83,7 +83,7 @@ uint8_t PGP::read_packet_header(const std::string & data, std::string::size_type
                 length = first_octet;
                 pos += 2;
             }
-            else if ((192 <= first_octet) & (first_octet < 223)){   // 192 - 8383; A two-octet Body Length header encodes packet lengths of 192 to 8383 octets.
+            else if ((192 <= first_octet) & (first_octet <= 223)){   // 192 - 8383; A two-octet Body Length header encodes packet lengths of 192 to 8383 octets.
                 length = toint(data.substr(pos + 1, 2), 256) - (192 << 8) + 192;
                 pos += 3;
             }

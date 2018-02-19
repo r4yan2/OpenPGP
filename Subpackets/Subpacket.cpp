@@ -7,7 +7,7 @@ std::string Sub::write_SUBPACKET(const std::string & data) const{
     if (data.size() < 192){
         return std::string(1, data.size()) + data;
     }
-    else if ((192 <= data.size()) && (data.size() < 8383)){
+    else if ((192 <= data.size()) && (data.size() <= 8383)){
         return unhexlify(makehex(((((data.size() >> 8) + 192) << 8) + (data.size() & 0xff) - 192), 4)) + data;
     }
     else{
