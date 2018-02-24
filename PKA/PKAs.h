@@ -62,6 +62,8 @@ namespace OpenPGP {
             #ifdef GPG_COMPATIBLE
             const uint8_t ECDH                          = 18;
             const uint8_t ECDSA                         = 19;
+            const uint8_t RESERVED_ELGAMAL              = 20;
+            const uint8_t RESERVED_DH                   = 21;
             const uint8_t EdDSA                         = 22;
             #endif
         }
@@ -73,15 +75,17 @@ namespace OpenPGP {
             std::make_pair(ID::ELGAMAL,             "ELGAMAL (Encrypt-Only)"),
             std::make_pair(ID::DSA,                 "DSA"),
             #ifdef GPG_COMPATIBLE
-            std::make_pair(ID::ECDH,                 "ECDH"),
-            std::make_pair(ID::ECDSA,                 "ECDSA"),
-            std::make_pair(ID::EdDSA,                 "EdDSA"),
+            std::make_pair(ID::ECDH,                "ECDH"),
+            std::make_pair(ID::ECDSA,               "ECDSA"),
+            std::make_pair(ID::RESERVED_ELGAMAL,    "Reserved (formerly ELGAMAL Encrypt or Sign)"),
+            std::make_pair(ID::RESERVED_DH,         "Reserved for Diffie-Hellman (X9.42), as defined for IETF-S / MIME)"),
+            std::make_pair(ID::EdDSA,               "EdDSA"),
             #else
             std::make_pair(18,                      "Reserved for Elliptic Curve"),
             std::make_pair(19,                      "Reserved for ECDSA"),
-            #endif
             std::make_pair(20,                      "Reserved (formerly ELGAMAL Encrypt or Sign)"),
             std::make_pair(21,                      "Reserved for Diffie-Hellman (X9.42), as defined for IETF-S / MIME)"),
+            #endif
             std::make_pair(100,                     "Private/Experimental algorithm"),
             std::make_pair(101,                     "Private/Experimental algorithm"),
             std::make_pair(102,                     "Private/Experimental algorithm"),

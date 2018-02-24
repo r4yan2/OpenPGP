@@ -192,7 +192,7 @@ void Tag2::read(const std::string & data){
             mpi.push_back(read_MPI(data, pos)); // RSA m**d mod n
         }
         #ifdef GPG_COMPATIBLE
-        else if(pka == PKA::ID::DSA || pka == PKA::ID::ECDSA || pka == PKA::ID::ELGAMAL){
+        else if(pka == PKA::ID::DSA || pka == PKA::ID::ECDSA || pka == PKA::ID::ELGAMAL || pka == PKA::ID::RESERVED_ELGAMAL){
             mpi.push_back(read_MPI(data, pos)); // r
             mpi.push_back(read_MPI(data, pos)); // s
         }
@@ -229,7 +229,7 @@ void Tag2::read(const std::string & data){
             mpi.push_back(read_MPI(data, pos)); // RSA m**d mod n
         }
         #ifdef GPG_COMPATIBLE
-        else if(pka == PKA::ID::DSA || pka == PKA::ID::ECDSA || pka == PKA::ID::EdDSA || pka == PKA::ID::ELGAMAL){
+        else if(pka == PKA::ID::DSA || pka == PKA::ID::ECDSA || pka == PKA::ID::EdDSA || pka == PKA::ID::ELGAMAL || pka == PKA::ID::RESERVED_ELGAMAL){
             mpi.push_back(read_MPI(data, pos)); // r
             mpi.push_back(read_MPI(data, pos)); // s
         }

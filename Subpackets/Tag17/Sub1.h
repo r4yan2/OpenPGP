@@ -87,6 +87,7 @@ namespace OpenPGP {
                 private:
                     uint8_t version;
                     uint8_t encoding;
+                    std::string reserved_12;
                     std::string image;
 
                     static unsigned int count;  // count of all images found; incremented by creating new instances of Sub1

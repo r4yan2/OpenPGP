@@ -56,6 +56,10 @@ std::size_t Sub::get_size() const{
     return size;
 }
 
+bool Sub::get_critical() const{
+    return critical;
+}
+
 void Sub::set_critical(const bool c){
     critical = c;
 }

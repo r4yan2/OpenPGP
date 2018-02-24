@@ -88,13 +88,13 @@ void Key::read_common(const std::string & data, std::string::size_type & pos){
             mpi.push_back(read_MPI(data, pos)); //        DSA g
             mpi.push_back(read_MPI(data, pos)); //        DSA y
         }
+        #ifdef GPG_COMPATIBLE
         // ELGAMAL
-        else if (pka == PKA::ID::ELGAMAL){
+        else if (pka == PKA::ID::ELGAMAL || pka == PKA::ID::RESERVED_ELGAMAL){
             mpi.push_back(read_MPI(data, pos));     // ELGAMAL p
             mpi.push_back(read_MPI(data, pos));     // ELGAMAL g
             mpi.push_back(read_MPI(data, pos));     // ELGAMAL y
         }
-        #ifdef GPG_COMPATIBLE
         //ECDSA
         else if(pka == PKA::ID::ECDSA){
             uint8_t curve_dim = data[pos];
@@ -119,6 +119,17 @@ void Key::read_common(const std::string & data, std::string::size_type & pos){
             kdf_hash = data[pos + 2];
             kdf_alg = data[pos + 3];
             pos += 4; // Jump over the KDF parameters
+        }
+        //DH
+        else if (pka == PKA::ID::RESERVED_DH){
+            mpi.push_back(read_MPI(data, pos));     // DH p
+        }
+        #else
+        // ELGAMAL
+        else if (pka == PKA::ID::ELGAMAL){
+            mpi.push_back(read_MPI(data, pos));     // ELGAMAL p
+            mpi.push_back(read_MPI(data, pos));     // ELGAMAL g
+            mpi.push_back(read_MPI(data, pos));     // ELGAMAL y
         }
         #endif
         else{
@@ -193,7 +204,6 @@ std::string Key::raw_common() const{
     #ifdef GPG_COMPATIBLE
     if (pka == PKA::ID::ECDSA || pka == PKA::ID::EdDSA || pka == PKA::ID::ECDH){
         out += std::string(1, PKA::CURVE_OID_LENGTH.at(hexlify(curve, true)));
-        //out += curve.size();
         out += curve;
     }
     #endif

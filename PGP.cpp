@@ -116,7 +116,7 @@ uint8_t PGP::read_packet_header(const std::string & data, std::string::size_type
 }
 
 Packet::Tag::Ptr PGP::read_packet_raw(const bool format, const uint8_t tag, uint8_t & partial, const std::string & data, std::string::size_type & pos, const std::string::size_type & length) const{
-    if (length < 1){
+    if (length < 1 && tag != Packet::USER_ID){
         throw std::error_code(ParsingErrc::LengthLEQZero);
     }
     Packet::Tag::Ptr out;
@@ -381,6 +381,11 @@ void PGP::read_raw(const std::string & data){
 }
 
 void PGP::read_raw(std::istream & stream){
+    /*std::ofstream OutFile;
+    OutFile.open("/tmp/read.bin", std::ios::out | std::ios::binary);
+    std::string asd (std::string(std::istreambuf_iterator <char> (stream), {}));
+    OutFile.write(asd.c_str(), asd.length());
+    OutFile.close();*/
     read_raw(std::string(std::istreambuf_iterator <char> (stream), {}));
 }
 

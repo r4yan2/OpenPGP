@@ -102,10 +102,9 @@ std::string write_MPI(const MPI & data){
 MPI read_MPI(const std::string & data, std::string::size_type & pos){
 
     // get number of bits
-    /*uint16_t size = (static_cast <uint8_t> (data[pos]) << 8) |
-                     static_cast <uint8_t> (data[pos + 1]);*/
-    uint16_t size = ((uint8_t) (data[pos]) << 8) |
-            (uint8_t) (data[pos + 1]);
+    uint16_t size = (static_cast <uint8_t> (data[pos]) << 8) |
+                     static_cast <uint8_t> (data[pos + 1]);
+
     // update position
     pos += 2;
 
