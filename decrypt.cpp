@@ -34,6 +34,8 @@ Message data(const uint8_t sym,
     else if (packets[i] -> get_tag() == Packet::SYM_ENCRYPTED_INTEGRITY_PROTECTED_DATA){
         data = std::static_pointer_cast <Packet::Tag18> (packets[i]) -> get_protected_data();
         tag = Packet::SYM_ENCRYPTED_INTEGRITY_PROTECTED_DATA;
+    }else{
+        throw std::runtime_error("Tag not found");
     }
 
     if (!data.size()){
