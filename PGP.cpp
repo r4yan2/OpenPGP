@@ -189,7 +189,7 @@ Packet::Tag::Ptr PGP::read_packet_raw(const bool format, const uint8_t tag, uint
         }
         else{
             out = std::make_shared<Packet::TagNotValid> ();
-            std::cerr << "Warning Found private/reserver Packet: " << std::to_string(tag) << std::endl;
+            //std::cerr << "Warning Found private/reserver Packet: " << std::to_string(tag) << std::endl;
             //throw std::runtime_error("Error: Tag not defined: " + std::to_string(tag) + ".");
         }
     }

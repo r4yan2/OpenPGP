@@ -65,7 +65,7 @@ void Tag17::read(const std::string & data){
         }
         else {
             // throw std::runtime_error("Error: Tag 17 Subpacket tag not defined or reserved: " + std::to_string(data[pos]));
-            std::cerr << "Warning: Tag 17 Subpacket tag not defined or reserved: " << std::to_string(type) << std::endl;
+            //std::cerr << "Warning: Tag 17 Subpacket tag not defined or reserved: " << std::to_string(type) << std::endl;
             subpacket = std::make_shared <Subpacket::Tag17::SubWrong> (type);
         }
 
