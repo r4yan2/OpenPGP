@@ -286,10 +286,10 @@ bool Key::meaningful(const PGP & pgp){
     Packet::Tag13::Ptr user_id = nullptr;
     while ((i < packets.size()) && (Packet::is_user(packets[i] -> get_tag()))){
         // make sure there is a User packet
-        if ((packets[i] -> get_tag() != Packet::USER_ID)       &&
+        /*if ((packets[i] -> get_tag() != Packet::USER_ID)       &&
             (packets[i] -> get_tag() != Packet::USER_ATTRIBUTE)){
             throw std::error_code(KeyErrc::NotUserID);
-        }
+        }*/
 
         const Packet::User::Ptr user = std::static_pointer_cast <Packet::User> (packets[i]);
         if (user -> get_tag() == Packet::USER_ID){

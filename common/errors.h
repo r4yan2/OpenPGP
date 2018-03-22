@@ -7,7 +7,7 @@ enum class KeyErrc{
     FirstPacketWrong        = 4,    // "Error: First packet is not a " + Packet::NAME.at(key) + ".\n"
     SignAfterPrimary        = 5,    // "Error: Packet " + std::to_string(i) + " following " + Packet::NAME.at(key) + " is not a key revocation signature.\n"
     AtLeastOneUID           = 6,    // "Error: Needed at least one UserID"
-    NotUserID               = 7,    // "Error: Packet is not a User ID or User Attribute Packet.\n"
+    //NotUserID               = 7,    // "Error: Packet is not a User ID or User Attribute Packet.\n"
     WrongSignature          = 8,    // "Error: Signature is not a certification or revocation."
     NoSubkeyFound           = 9,    // "Error: Bad subkey packet.\n"
     Ver3Subkey              = 10,   // "Error: Version 3 keys MUST NOT have subkeys.\n";

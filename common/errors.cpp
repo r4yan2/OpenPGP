@@ -37,9 +37,6 @@ namespace { // anonymous namespace
             case KeyErrc::SignAfterPrimary:
                 return "Error: Signature different from revocation found after the primary key.";
 
-            case KeyErrc::NotUserID:
-                return "Error: Packet is not a User ID or User Attribute Packet.";
-
             case KeyErrc::WrongSignature:
                 return "Error: Signature is not a certification or revocation.";
 
