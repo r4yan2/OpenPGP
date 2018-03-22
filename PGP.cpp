@@ -253,10 +253,10 @@ PGP::PGP(const std::string & data)
     read(data);
 }
 
-PGP::PGP(std::istream & stream)
+PGP::PGP(std::istream & stream, const bool &dump)
     : PGP()
 {
-    read(stream);
+    read(stream, dump);
 }
 
 PGP::~PGP(){}
@@ -266,7 +266,7 @@ void PGP::read(const std::string & data){
     read(s);
 }
 
-void PGP::read(std::istream & stream){
+void PGP::read(std::istream & stream, const bool &dump){
     // find armor header
     //
     // 6.2. Forming ASCII Armor
@@ -282,7 +282,7 @@ void PGP::read(std::istream & stream){
     while (std::getline(stream, line) && line.substr(0, 15) != "-----BEGIN PGP ");
 
     // if no armor header found, assume entire stream is key
-    if (!stream){
+    if (!stream || dump){
         stream.clear();
         stream.seekg(stream.beg);
 

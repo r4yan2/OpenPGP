@@ -28,8 +28,8 @@ Key::Key(const std::string & data)
 #endif
 }
 
-Key::Key(std::istream & stream)
-    : PGP(stream)
+Key::Key(std::istream & stream, const bool &dump)
+    : PGP(stream, dump)
 {
 #ifndef AVOID_MEANINGFUL_CHECK
     // warn if packet sequence is not meaningful

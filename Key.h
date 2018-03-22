@@ -70,7 +70,7 @@ namespace OpenPGP {
             Key(const PGP & copy);
             Key(const Key & copy);
             Key(const std::string & data);
-            Key(std::istream & stream);
+            Key(std::istream & stream, const bool &dump = false);
             ~Key();
 
             // keyid that is searched for on keyservers
