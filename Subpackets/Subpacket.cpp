@@ -48,6 +48,10 @@ std::string Sub::write() const{
     return write_SUBPACKET(std::string(1, type | (critical?0x80:0x00)) + raw());
 }
 
+std::string Sub::write_notype() const {
+    return write_SUBPACKET(raw());
+}
+
 uint8_t Sub::get_type() const{
     return type;
 }
@@ -71,6 +75,17 @@ void Sub::set_type(const uint8_t t){
 void Sub::set_size(const std::size_t s){
     size = s;
 }
+
+void Sub::set_original_header(std::string original){
+    original_header_size = original.size();
+    for (size_t i=0; i<original.size(); i++)
+        original_header[i] = original[i];
+}
+
+std::string Sub::get_original_header(){
+    return std::string(original_header, original_header_size);
+}
+
 
 }
 }

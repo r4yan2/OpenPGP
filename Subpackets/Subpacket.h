@@ -105,6 +105,8 @@ namespace OpenPGP {
                 Sub(uint8_t type = 0, unsigned int size = 0, bool crit = false);
                 Sub(const Sub & copy);
                 Sub & operator=(const Sub & copy);
+                char original_header[5];
+                std::size_t original_header_size;
 
             public:
                 typedef std::shared_ptr <Sub> Ptr;
@@ -114,6 +116,7 @@ namespace OpenPGP {
                 virtual std::string show(const std::size_t indents = 0, const std::size_t indent_size = 4) const = 0;
                 virtual std::string raw()   const = 0; // returns raw subpacket data, with no header
                 std::string write()         const;
+                std::string write_notype()         const;
 
                 bool get_critical()         const;
                 uint8_t get_type()          const;
@@ -122,6 +125,8 @@ namespace OpenPGP {
                 void set_critical(const bool c);
                 void set_type(const uint8_t t);
                 void set_size(const std::size_t s);
+                std::string get_original_header();
+                void set_original_header(std::string);
         };
     }
 }

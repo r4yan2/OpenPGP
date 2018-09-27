@@ -15,6 +15,9 @@ Sub & Sub::operator=(const Sub & copy){
     return *this;
 }
 
+std::string Sub::write() const{
+    return std::string(1, type | (critical?0x80:0x00)) + raw();
+}
 }
 }
 }

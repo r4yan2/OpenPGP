@@ -4,19 +4,22 @@ namespace OpenPGP {
 namespace Packet {
 
 // Extracts Subpacket data for figuring which subpacket type to create
-void Tag17::read_subpacket(const std::string & data, std::string::size_type & pos, std::string::size_type & length){
+void Tag17::read_subpacket(const std::string & data, std::string::size_type & pos, std::string::size_type & length, std::string & old_length){
     length = 0;
 
     const uint8_t first_octet = static_cast <unsigned char> (data[pos]);
     if (first_octet < 192){
+        old_length = data.substr(pos,1);
         length = first_octet;
         pos += 1;
     }
     else if ((192 <= first_octet) && (first_octet < 255)){
         length = toint(data.substr(pos, 2), 256) - (192 << 8) + 192;
+        old_length = data.substr(pos,2);
         pos += 2;
     }
     else if (first_octet == 255){
+        old_length = data.substr(pos, 5);
         length = toint(data.substr(pos + 1, 4), 256);
         pos += 5;
     }
@@ -53,23 +56,26 @@ Tag17::~Tag17(){
 void Tag17::read(const std::string & data){
     size = data.size();
 
+    std::string old_header = "";
     // read subpackets
     std::string::size_type pos = 0;
     while (pos < size){
         std::string::size_type length;
-        read_subpacket(data, pos, length);
+        read_subpacket(data, pos, length, old_header);
 
         Subpacket::Tag17::Sub::Ptr subpacket = nullptr;
         if (data[pos] == Subpacket::Tag17::IMAGE_ATTRIBUTE){
             subpacket = std::make_shared <Subpacket::Tag17::Sub1> ();
+            subpacket -> read(data.substr(pos + 1, length - 1));
+            subpacket -> set_original_header(old_header);
         }
         else {
             // throw std::runtime_error("Error: Tag 17 Subpacket tag not defined or reserved: " + std::to_string(data[pos]));
             //std::cerr << "Warning: Tag 17 Subpacket tag not defined or reserved: " << std::to_string(type) << std::endl;
             subpacket = std::make_shared <Subpacket::Tag17::SubWrong> (type);
+            subpacket -> read(data.substr(pos, length));
         }
 
-        subpacket -> read(data.substr(pos + 1, length - 1));
         attributes.push_back(subpacket);
 
         // go to end of current subpacket
@@ -90,7 +96,14 @@ std::string Tag17::show(const std::size_t indents, const std::size_t indent_size
 std::string Tag17::raw() const{
     std::string out = "";
     for(Subpacket::Tag17::Sub::Ptr const & a : attributes){
-        out += a -> write();
+        auto check = a -> get_type();
+        out += a -> get_original_header();
+        if (check){
+            out += a -> write();
+        }
+        else{
+            out+= a -> write_notype();
+        }
     }
     return out;
 }

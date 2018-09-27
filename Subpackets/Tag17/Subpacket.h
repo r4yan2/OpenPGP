@@ -56,6 +56,9 @@ namespace OpenPGP {
                     virtual ~Sub();
 
                     virtual Ptr clone() const = 0;
+                    std::string write() const;
+
+
             };
         }
     }

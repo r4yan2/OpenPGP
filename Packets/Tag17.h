@@ -79,7 +79,7 @@ namespace OpenPGP {
                 // only defined subpacket is 1
                 Attributes attributes;
 
-                void read_subpacket(const std::string & data, std::string::size_type & pos, std::string::size_type & length);
+                void read_subpacket(const std::string & data, std::string::size_type & pos, std::string::size_type & length, std::string & old_length);
 
             public:
                 typedef std::shared_ptr <Packet::Tag17> Ptr;
