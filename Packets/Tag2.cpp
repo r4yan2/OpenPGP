@@ -203,7 +203,13 @@ void Tag2::read(const std::string & data){
         }
         #endif
         else{
-            throw std::error_code(ParsingErrc::SignaturePKANotFound);
+            //read mpis until end 
+            try{
+                while(1)
+                    mpi.push_back(read_MPI(data,pos));
+               }catch(...){
+               }
+            //throw std::error_code(ParsingErrc::SignaturePKANotFound);
             //throw std::runtime_error("Error: Unknown PKA type: " + std::to_string(pka));
         }
     }
@@ -240,7 +246,13 @@ void Tag2::read(const std::string & data){
         }
         #endif
         else{
-            throw std::error_code(ParsingErrc::SignaturePKANotFound);
+            //read mpis until end 
+            try{
+                while(1)
+                    mpi.push_back(read_MPI(data,pos));
+               }catch(...){
+               }
+            //throw std::error_code(ParsingErrc::SignaturePKANotFound);
             //throw std::runtime_error("Error: Unknown PKA type: " + std::to_string(pka));
         }
     }
