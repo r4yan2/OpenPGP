@@ -29,9 +29,12 @@ void Tag1::read(const std::string & data){
     keyid = data.substr(1, 8);
     pka = data[9];
     std::string::size_type pos = 10;
+    /*
     while (pos < data.size()){
         mpi.push_back(read_MPI(data, pos));
     }
+    */
+    mpi = read_MPIs(data, pos, -1);
 }
 
 std::string Tag1::show(const std::size_t indents, const std::size_t indent_size) const{

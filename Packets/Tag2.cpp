@@ -189,26 +189,31 @@ void Tag2::read(const std::string & data){
         std::string::size_type pos = 19;
 
         if (PKA::is_RSA(pka)){
+            /*
             mpi.push_back(read_MPI(data, pos)); // RSA m**d mod n
+            */
+            extend(mpi, read_MPIs(data, pos, 1));
         }
         #ifdef GPG_COMPATIBLE
         else if(pka == PKA::ID::DSA || pka == PKA::ID::ECDSA || pka == PKA::ID::ELGAMAL || pka == PKA::ID::RESERVED_ELGAMAL){
+            /*
             mpi.push_back(read_MPI(data, pos)); // r
             mpi.push_back(read_MPI(data, pos)); // s
+            */
+            extend(mpi, read_MPIs(data, pos, 2));
         }
         #else
         else if (pka == PKA::ID::DSA || pka == PKA::ID::ELGAMAL){
+            /*
             mpi.push_back(read_MPI(data, pos)); // DSA r
             mpi.push_back(read_MPI(data, pos)); // DSA s
+            */
+            extend(mpi,read_MPIs(data, pos, 2));
         }
         #endif
         else{
             //read mpis until end 
-            try{
-                while(1)
-                    mpi.push_back(read_MPI(data,pos));
-               }catch(...){
-               }
+            extend(mpi,read_MPIs(data,pos,-1));
             //throw std::error_code(ParsingErrc::SignaturePKANotFound);
             //throw std::runtime_error("Error: Unknown PKA type: " + std::to_string(pka));
         }
@@ -232,26 +237,31 @@ void Tag2::read(const std::string & data){
 //        if (PKA::is_RSA(PKA))
         std::string::size_type pos = hashed_size + 6 + 2 + unhashed_size + 2;
         if (PKA::is_RSA(pka)){
+            /*
             mpi.push_back(read_MPI(data, pos)); // RSA m**d mod n
+            */
+            extend(mpi, read_MPIs(data,pos,1));
         }
         #ifdef GPG_COMPATIBLE
         else if(pka == PKA::ID::DSA || pka == PKA::ID::ECDSA || pka == PKA::ID::EdDSA || pka == PKA::ID::ELGAMAL || pka == PKA::ID::RESERVED_ELGAMAL){
+            /*
             mpi.push_back(read_MPI(data, pos)); // r
             mpi.push_back(read_MPI(data, pos)); // s
+            */
+            extend(mpi,read_MPIs(data, pos, 2));
         }
         #else
         else if (pka == PKA::ID::DSA || pka == PKA::ID::ELGAMAL){
+            /*
             mpi.push_back(read_MPI(data, pos)); // DSA r
             mpi.push_back(read_MPI(data, pos)); // DSA s
+            */
+            extend(mpi,read_MPIs(data, pos, 2));
         }
         #endif
         else{
             //read mpis until end 
-            try{
-                while(1)
-                    mpi.push_back(read_MPI(data,pos));
-               }catch(...){
-               }
+            extend(mpi, read_MPIs(data,pos,-1));
             //throw std::error_code(ParsingErrc::SignaturePKANotFound);
             //throw std::runtime_error("Error: Unknown PKA type: " + std::to_string(pka));
         }

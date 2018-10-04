@@ -69,8 +69,11 @@ void Key::read_common(const std::string & data, std::string::size_type & pos){
         expire = (data[pos + 5] << 8) + static_cast<uint8_t > (data[pos + 6]);
         pka = data[pos + 7];
         pos += 8;
+        /*
         mpi.push_back(read_MPI(data, pos));     // RSA n
         mpi.push_back(read_MPI(data, pos));     // RSA e
+        */
+        mpi = read_MPIs(data, pos, 2);
     }
     else if (version == 4){
         pka = data[pos + 5];
@@ -78,43 +81,62 @@ void Key::read_common(const std::string & data, std::string::size_type & pos){
 
         // RSA
         if(pka == PKA::ID::RSA_ENCRYPT_ONLY || pka == PKA::ID::RSA_ENCRYPT_OR_SIGN || pka == PKA::ID::RSA_SIGN_ONLY){
+            /*
             mpi.push_back(read_MPI(data, pos));     // RSA n
             mpi.push_back(read_MPI(data, pos));     // RSA e
+            */
+            mpi = read_MPIs(data, pos, 2);
         }
         // DSA
         else if (pka == PKA::ID::DSA){
+            /*
             mpi.push_back(read_MPI(data, pos)); //        DSA p
             mpi.push_back(read_MPI(data, pos)); //        DSA q
             mpi.push_back(read_MPI(data, pos)); //        DSA g
             mpi.push_back(read_MPI(data, pos)); //        DSA y
+            */
+            mpi = read_MPIs(data, pos, 4);
+            
         }
         #ifdef GPG_COMPATIBLE
         // ELGAMAL
         else if (pka == PKA::ID::ELGAMAL || pka == PKA::ID::RESERVED_ELGAMAL){
+            /*
             mpi.push_back(read_MPI(data, pos));     // ELGAMAL p
             mpi.push_back(read_MPI(data, pos));     // ELGAMAL g
             mpi.push_back(read_MPI(data, pos));     // ELGAMAL y
+            */
+            mpi = read_MPIs(data, pos, 3);
         }
         //ECDSA
         else if(pka == PKA::ID::ECDSA){
             uint8_t curve_dim = data[pos];
             curve = data.substr(pos + 1, curve_dim);
             pos += curve_dim + 1;
+            /*
             mpi.push_back(read_MPI(data, pos));
+            */
+            mpi = read_MPIs(data, pos, 1);
         }
         //EdDSA
         else if (pka == PKA::ID::EdDSA){
             uint8_t curve_dim = data[pos];
             curve = data.substr(pos + 1, curve_dim);
             pos += curve_dim + 1;
+            /*
             mpi.push_back(read_MPI(data, pos));
+            */
+            mpi = read_MPIs(data, pos, 1);
         }
         //ECDH
         else if (pka == PKA::ID::ECDH){
             uint8_t curve_dim = data[pos];
             curve = data.substr(pos + 1, curve_dim);
             pos += curve_dim + 1;
+            /*
             mpi.push_back(read_MPI(data, pos));
+            */
+            mpi = read_MPIs(data, pos, 1);
             kdf_size = data[pos];
             kdf_hash = data[pos + 2];
             kdf_alg = data[pos + 3];
@@ -122,18 +144,26 @@ void Key::read_common(const std::string & data, std::string::size_type & pos){
         }
         //DH
         else if (pka == PKA::ID::RESERVED_DH){
+            /*
             mpi.push_back(read_MPI(data, pos));     // DH p
+            */
+            mpi = read_MPIs(data, pos, 1);
         }
         #else
         // ELGAMAL
         else if (pka == PKA::ID::ELGAMAL){
+            /*
             mpi.push_back(read_MPI(data, pos));     // ELGAMAL p
             mpi.push_back(read_MPI(data, pos));     // ELGAMAL g
             mpi.push_back(read_MPI(data, pos));     // ELGAMAL y
+            */
+            mpi = read_MPIs(data, pos, 3);
         }
         #endif
         else{
-            throw std::error_code(ParsingErrc::PubkeyAlgorithmNotFound);
+            mpi = read_MPIs(data,pos,-1);
+
+            //throw std::error_code(ParsingErrc::PubkeyAlgorithmNotFound);
         }
     }
     else{

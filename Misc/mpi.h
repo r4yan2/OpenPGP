@@ -33,7 +33,15 @@ THE SOFTWARE.
 #include "../common/includes.h"
 
 namespace OpenPGP {
-    typedef mpz_class MPI;
+
+    class MPI: public mpz_class{
+        using mpz_class::mpz_class;
+        private:
+            size_t size{0};
+        public:
+            void set_bitsize(int s){size=s;};
+            size_t get_bitsize() const{return size;};
+    };
 
     MPI rawtompi(const std::string & raw);
     MPI hextompi(const std::string & hex);
@@ -61,6 +69,9 @@ namespace OpenPGP {
 
     std::string write_MPI(const MPI & data);                                 // given some value, return the formatted mpi
     MPI read_MPI(const std::string & data, std::string::size_type & pos);    // remove mpi from data, returning mpi value. the rest of the data will be returned through pass-by-reference
+    std::vector<MPI> read_MPIs(const std::string & data, std::string::size_type & pos, int limit);
+
+    void extend(std::vector<MPI> &v, const std::vector<MPI> e);
 
 }
 

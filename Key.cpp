@@ -93,10 +93,12 @@ std::string Key::list_keys(const std::size_t indents, const std::size_t indent_s
                 out << "\n";
             }
 
+            /*
             out << indent << Public_Key_Type.at(p -> get_tag()) << "  " << std::setfill(' ') << std::setw(4) << std::to_string(bitsize(key -> get_mpi()[0]))
                 << indent << PKA::SHORT.at(key -> get_pka()) << "/"
                 << indent << hexlify(key -> get_keyid().substr(4, 4)) << " "
                 << indent << show_date(key -> get_time());
+                */
         }
         // User ID
         else if (p -> get_tag() == Packet::USER_ID){

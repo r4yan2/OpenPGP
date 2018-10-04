@@ -45,7 +45,7 @@ unsigned long mpitoulong(const MPI & a){
 }
 
 std::size_t bitsize(const MPI &a){
-    return mpitobin(a).size();
+    return a.get_bitsize();
 }
 
 bool knuth_prime_test(const MPI & a, int test){
@@ -119,6 +119,51 @@ MPI read_MPI(const std::string & data, std::string::size_type & pos){
     const MPI out = rawtompi(data.substr(pos, size));
     pos += size;
     return out;
+}
+
+// Read some mpi from data, until a given limit or EOF
+std::vector<MPI> read_MPIs(const std::string & data, std::string::size_type & pos, int limit){
+    std::vector<MPI> mpis;
+    while(limit != 0){
+        // get number of bits
+        uint16_t size = (static_cast <uint8_t> (data[pos]) << 8) |
+                         static_cast <uint8_t> (data[pos + 1]);
+        unsigned int bitsiz = size;
+
+        // update position
+        pos += 2;
+
+        // pad to nearest 8 bits
+        while (size & 7){
+            size++;
+        }
+
+        // get number of octets
+        size >>= 3;
+
+        if (size != 0){
+
+            try{
+                MPI mpi = rawtompi(data.substr(pos,size));
+                mpi.set_bitsize(bitsiz);
+                mpis.push_back(mpi);
+            }catch(...){
+                break;
+            }
+            pos += size;
+        }else{
+            mpis.push_back(MPI());
+        }
+        if (pos >= data.size())
+            limit = 0;
+        else
+            limit--;
+    }
+    return mpis;
+}
+
+void extend(std::vector<MPI> & v, std::vector<MPI> e){
+    v.insert(v.end(), e.begin(), e.end());
 }
 
 }
