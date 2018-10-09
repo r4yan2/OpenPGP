@@ -415,9 +415,11 @@ PKA::Values Tag5::decrypt_secret_keys(const std::string & passphrase) const {
     // extract MPI values
     PKA::Values out;
     std::string::size_type pos = 0;
+    /*
     while (pos < keys.size()){
         out.push_back(read_MPI(keys, pos));
-    }
+    }*/
+    out = read_MPIs(keys, pos, -1);
 
     return out;
 }
