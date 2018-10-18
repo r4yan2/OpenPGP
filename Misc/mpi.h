@@ -32,6 +32,8 @@ THE SOFTWARE.
 
 #include "../common/includes.h"
 
+#include <vector>
+
 namespace OpenPGP {
 
     class MPI: public mpz_class{
