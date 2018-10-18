@@ -44,7 +44,9 @@ Key::Key(const std::string & data)
     read(data);
 }
 
-Key::~Key(){}
+Key::~Key(){
+    free(bytes);
+}
 
 void Key::read(const std::string & data){
     std::string::size_type pos = 0;
@@ -62,6 +64,9 @@ std::string Key::raw() const{
 
 void Key::read_common(const std::string & data, std::string::size_type & pos){
     size = data.size();
+    bytes = (char*) malloc(size);
+    for (size_t i=0; i<size; i++)
+        bytes[i] = data[i];
     version = data[pos];
     time = toint(data.substr(pos + 1, 4), 256);
 
@@ -224,6 +229,7 @@ std::string Key::show_common(const std::size_t indents, const std::size_t indent
 }
 
 std::string Key::raw_common() const{
+    /*
     std::string out = std::string(1, version) + unhexlify(makehex(time, 8));
     if (version < 4){ // to recreate older keys
         out += unhexlify(makehex(expire, 4));
@@ -233,7 +239,9 @@ std::string Key::raw_common() const{
 
     #ifdef GPG_COMPATIBLE
     if (pka == PKA::ID::ECDSA || pka == PKA::ID::EdDSA || pka == PKA::ID::ECDH){
-        out += std::string(1, PKA::CURVE_OID_LENGTH.at(hexlify(curve, true)));
+        try{
+        out += std::string(1, PKA::CURVE_OID_LENGTH.at((hexlify(curve, true))));
+        }catch(...){out+="0";}
         out += curve;
     }
     #endif
@@ -250,7 +258,8 @@ std::string Key::raw_common() const{
         out += kdf_alg;
     }
     #endif
-
+*/
+    std::string out = std::string(bytes, size);
     return out;
 }
 

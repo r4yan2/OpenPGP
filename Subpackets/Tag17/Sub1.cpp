@@ -26,8 +26,11 @@ void Sub1::read(const std::string & data){
         version = data[2];
         encoding = data[3];
         reserved_12 = data.substr(4, 12);
+        header_length = data.substr(0, 2);
+        try{
         image = data.substr(16, data.size() - 16); // remove image header - 12 '\x00's
-        size = image.size();
+        }catch(...){image = "";}
+        size = data.size();
     }
 }
 
@@ -54,7 +57,8 @@ std::string Sub1::show(const std::size_t indents, const std::size_t indent_size)
 
 std::string Sub1::raw() const{
     std::string header = std::string(1, version) + std::string(1, encoding) + reserved_12;
-    return unhexlify(little_end(makehex(header.size() + 2, 4), 16)) + header + image;
+    return header_length + header + image;
+    //return unhexlify(little_end(makehex(header.size() + 2, 4), 16)) + header + image;
     //return "\x10" + zero + std::string(1, version) + std::string(1, encoding) + reserved_12 + image;
 }
 

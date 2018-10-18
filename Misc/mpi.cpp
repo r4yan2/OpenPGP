@@ -116,9 +116,13 @@ MPI read_MPI(const std::string & data, std::string::size_type & pos){
     // get number of octets
     size >>= 3;
 
-    const MPI out = rawtompi(data.substr(pos, size));
-    pos += size;
-    return out;
+    try{
+        const MPI out = rawtompi(data.substr(pos, size));
+        pos += size;
+        return out;
+    }catch(...){
+        return MPI();
+    }
 }
 
 // Read some mpi from data, until a given limit or EOF

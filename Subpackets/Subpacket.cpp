@@ -77,13 +77,11 @@ void Sub::set_size(const std::size_t s){
 }
 
 void Sub::set_original_header(std::string original){
-    original_header_size = original.size();
-    for (size_t i=0; i<original.size(); i++)
-        original_header[i] = original[i];
+    original_header = original;
 }
 
 std::string Sub::get_original_header(){
-    return std::string(original_header, original_header_size);
+    return original_header;
 }
 
 

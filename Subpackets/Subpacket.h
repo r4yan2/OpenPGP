@@ -105,8 +105,7 @@ namespace OpenPGP {
                 Sub(uint8_t type = 0, unsigned int size = 0, bool crit = false);
                 Sub(const Sub & copy);
                 Sub & operator=(const Sub & copy);
-                char original_header[5];
-                std::size_t original_header_size;
+                std::string original_header;
 
             public:
                 typedef std::shared_ptr <Sub> Ptr;

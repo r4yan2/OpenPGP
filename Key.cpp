@@ -329,13 +329,12 @@ bool Key::meaningful(const PGP & pgp){
 
             i++;
         }
-    };
+    }
 
     // need at least one User ID packet
     if (!user_id){
         throw std::error_code(KeyErrc::AtLeastOneUID);
     }
-
     //    - Zero or more Subkey packets
     while (i < packets.size()){
         if  (packets[i] -> get_tag() != subkey){

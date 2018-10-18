@@ -39,6 +39,7 @@ Tag2::Tag2(const std::string & data)
 Tag2::~Tag2(){
     hashed_subpackets.clear();
     unhashed_subpackets.clear();
+    free(bytes);
 }
 
 // Extracts Subpacket data for figuring which subpacket type to create
@@ -172,9 +173,12 @@ void Tag2::read_subpackets(const std::string & data, Tag2::Subpackets & subpacke
 
 void Tag2::read(const std::string & data){
     size = data.size();
+    bytes = (char*) malloc(size);
+    for (size_t i=0; i<size; i++)
+        bytes[i] = data[i];
     tag = 2;
     version = data[0];
-    if (version < 4){
+    if (version == 3){
         if (data[1] != 5){
             throw std::error_code(ParsingErrc::SignatureLengthWrong);
             //throw std::runtime_error("Error: Length of hashed material must be 5.");
@@ -266,10 +270,6 @@ void Tag2::read(const std::string & data){
             //throw std::runtime_error("Error: Unknown PKA type: " + std::to_string(pka));
         }
     }
-    else{
-        throw std::error_code(ParsingErrc::SignatureVersionNotFound);
-        //throw std::runtime_error("Error: Tag2 Unknown version: " + std::to_string(version));
-    }
 }
 
 std::string Tag2::show(const std::size_t indents, const std::size_t indent_size) const{
@@ -357,25 +357,9 @@ std::string Tag2::show(const std::size_t indents, const std::size_t indent_size)
 }
 
 std::string Tag2::raw() const{
-    std::string out(1, version);
-    if (version < 4){// to recreate older keys
-        out += "\x05" + std::string(1, type) + unhexlify(makehex(time, 8)) + keyid + std::string(1, pka) + std::string(1, hash) + left16;
-    }
-    if (version == 4){
-        std::string hashed_str = "";
-        for(Subpacket::Tag2::Sub::Ptr const & s : hashed_subpackets){
-            hashed_str += s -> write();
-        }
-        std::string unhashed_str = "";
-        for(Subpacket::Tag2::Sub::Ptr const & s : unhashed_subpackets){
-            unhashed_str += s -> write();
-        }
-        out += std::string(1, type) + std::string(1, pka) + std::string(1, hash) + unhexlify(makehex(hashed_str.size(), 4)) + hashed_str + unhexlify(makehex(unhashed_str.size(), 4)) + unhashed_str + left16;
-    }
-    for(MPI const & i : mpi){
-        out += write_MPI(i);
-    }
+    std::string out = std::string(bytes, size);
     return out;
+
 }
 
 uint8_t Tag2::get_type() const{

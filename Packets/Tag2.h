@@ -70,6 +70,8 @@ namespace OpenPGP {
                 uint8_t pka;
                 uint8_t hash;
                 PKA::Values mpi;
+                char* bytes;
+
                 std::string left16;        // 2 octets
 
                 // version 3 stuff
