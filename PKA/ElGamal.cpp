@@ -29,7 +29,8 @@ Values keygen(unsigned int bits){
     MPI h = 1;
     MPI exp = (p - 1) / q;
     while (g == 1){
-        g = powm(++h, exp, p);
+		h += 1;
+        g = powm(h, exp, p);
     }
 
     // 0 < x < p
