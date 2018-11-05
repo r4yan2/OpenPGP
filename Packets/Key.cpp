@@ -45,7 +45,6 @@ Key::Key(const std::string & data)
 }
 
 Key::~Key(){
-    free(bytes);
 }
 
 void Key::read(const std::string & data){
@@ -64,9 +63,7 @@ std::string Key::raw() const{
 
 void Key::read_common(const std::string & data, std::string::size_type & pos){
     size = data.size();
-    bytes = (char*) malloc(size);
-    for (size_t i=0; i<size; i++)
-        bytes[i] = data[i];
+    bytes = std::string(data);
     version = data[pos];
     time = toint(data.substr(pos + 1, 4), 256);
 
@@ -259,7 +256,7 @@ std::string Key::raw_common() const{
     }
     #endif
 */
-    std::string out = std::string(bytes, size);
+    std::string out = std::string(bytes);
     return out;
 }
 

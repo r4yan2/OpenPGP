@@ -39,7 +39,6 @@ Tag2::Tag2(const std::string & data)
 Tag2::~Tag2(){
     hashed_subpackets.clear();
     unhashed_subpackets.clear();
-    free(bytes);
 }
 
 // Extracts Subpacket data for figuring which subpacket type to create
@@ -173,9 +172,7 @@ void Tag2::read_subpackets(const std::string & data, Tag2::Subpackets & subpacke
 
 void Tag2::read(const std::string & data){
     size = data.size();
-    bytes = (char*) malloc(size);
-    for (size_t i=0; i<size; i++)
-        bytes[i] = data[i];
+    bytes = std::string(data);
     tag = 2;
     version = data[0];
     if (version == 3){
@@ -357,7 +354,7 @@ std::string Tag2::show(const std::size_t indents, const std::size_t indent_size)
 }
 
 std::string Tag2::raw() const{
-    std::string out = std::string(bytes, size);
+    std::string out = std::string(bytes);
     return out;
 
 }
