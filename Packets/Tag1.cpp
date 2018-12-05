@@ -24,6 +24,7 @@ Tag1::Tag1(const std::string & data)
 }
 
 void Tag1::read(const std::string & data){
+    bytes = data;
     size = data.size();
     version = data[0];
     keyid = data.substr(1, 8);
@@ -56,11 +57,14 @@ std::string Tag1::show(const std::size_t indents, const std::size_t indent_size)
 }
 
 std::string Tag1::raw() const{
+    /*
     std::string out = "\x03" + keyid + std::string(1, pka);
     for(unsigned int x = 0; x < mpi.size(); x++){
         out += write_MPI(mpi[x]);
     }
     return out;
+    */
+    return bytes;
 }
 
 std::string Tag1::get_keyid() const{

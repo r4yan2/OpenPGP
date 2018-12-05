@@ -140,6 +140,7 @@ namespace OpenPGP {
                 S2K::S2K::Ptr s2k;
                 std::string IV;
                 std::string secret;
+                std::string bytes;
 
                 void read_s2k(const std::string & data, std::string::size_type & pos);
                 std::string show_private(const std::size_t indents = 0, const std::size_t indent_size = 4) const;

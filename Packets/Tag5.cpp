@@ -155,6 +155,7 @@ std::string Tag5::show_private(const std::size_t indents, const std::size_t inde
 }
 
 void Tag5::read(const std::string & data){
+    bytes = data;
     size = data.size();
     std::string::size_type pos = 0;
 
@@ -196,6 +197,7 @@ std::string Tag5::show(const std::size_t indents, const std::size_t indent_size)
 }
 
 std::string Tag5::raw() const{
+    /*
     std::string out = raw_common() +            // public data
                       std::string(1, s2k_con);  // S2K usage octet
     if ((s2k_con == 254) || (s2k_con == 255)){
@@ -217,6 +219,8 @@ std::string Tag5::raw() const{
     }
 
     return out + secret;
+    */
+    return bytes;
 }
 
 uint8_t Tag5::get_s2k_con() const{
