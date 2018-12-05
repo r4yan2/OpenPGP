@@ -78,6 +78,7 @@ namespace OpenPGP {
                 uint8_t pka;
                 std::string keyid; // 8 octets
                 uint8_t nested;    // A zero value indicates that the next packet is another One-Pass Signature packet that describes another signature to be applied to the same message data.
+                std::string bytes;
 
             public:
                 typedef std::shared_ptr <Packet::Tag4> Ptr;

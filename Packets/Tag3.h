@@ -89,6 +89,7 @@ namespace OpenPGP {
                 uint8_t sym;
                 S2K::S2K::Ptr s2k;
                 std::shared_ptr <std::string> esk; // encrypted session key
+                std::string bytes;
 
             public:
                 typedef std::shared_ptr <Packet::Tag3> Ptr;

@@ -26,6 +26,7 @@ Tag11::Tag11(const std::string & data)
 }
 
 void Tag11::read(const std::string & data){
+    bytes = data;
     size        = data.size();
     format      = data[0];
     uint8_t len = data[1];
@@ -52,7 +53,10 @@ std::string Tag11::show(const std::size_t indents, const std::size_t indent_size
 }
 
 std::string Tag11::raw() const{
+    /*
     return std::string(1, format) + std::string(1, filename.size()) + filename + unhexlify(makehex(time, 8)) + literal;
+    */
+    return bytes;
 }
 
 uint8_t Tag11::get_format() const{

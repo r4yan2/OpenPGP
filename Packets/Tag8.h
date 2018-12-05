@@ -70,6 +70,7 @@ namespace OpenPGP {
                 std::string decompress(const std::string & data) const;
 
                 std::string show_title() const;
+                std::string bytes;
 
             public:
                 typedef std::shared_ptr <Packet::Tag8> Ptr;

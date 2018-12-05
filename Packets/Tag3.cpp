@@ -26,6 +26,7 @@ Tag3::Tag3(const std::string & data)
 Tag3::~Tag3(){}
 
 void Tag3::read(const std::string & data){
+    bytes = data;
     size = data.size();
     version = data[0];                  // 4
     sym = data[1];
@@ -69,7 +70,10 @@ std::string Tag3::show(const std::size_t indents, const std::size_t indent_size)
 }
 
 std::string Tag3::raw() const{
+    /*
     return std::string(1, version) + std::string(1, sym) + (s2k?s2k -> write():"") + (esk?*esk:"");
+    */
+    return bytes;
 }
 
 uint8_t Tag3::get_sym() const{

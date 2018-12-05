@@ -27,6 +27,7 @@ Tag4::Tag4(const std::string & data)
 }
 
 void Tag4::read(const std::string & data){
+    bytes = data;
     size    = data.size();
     version = data[0];                  // 3
     type    = data[1];
@@ -52,7 +53,10 @@ std::string Tag4::show(const std::size_t indents, const std::size_t indent_size)
     }
 
 std::string Tag4::raw() const{
+    /*
     return "\x03" + std::string(1, type) + std::string(1, hash) + std::string(1, pka) + keyid + std::string(1, nested);
+    */
+    return bytes;
 }
 
 uint8_t Tag4::get_type() const{
