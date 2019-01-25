@@ -354,8 +354,7 @@ std::string Tag2::show(const std::size_t indents, const std::size_t indent_size)
 }
 
 std::string Tag2::raw() const{
-    std::string out = std::string(bytes);
-    return out;
+    return bytes;
 
 }
 

@@ -54,6 +54,7 @@ Tag17::~Tag17(){
 }
 
 void Tag17::read(const std::string & data){
+    bytes = data;
     size = data.size();
 
     std::string old_header = "";
@@ -94,18 +95,19 @@ std::string Tag17::show(const std::size_t indents, const std::size_t indent_size
 }
 
 std::string Tag17::raw() const{
-    std::string out = "";
-    for(Subpacket::Tag17::Sub::Ptr const & a : attributes){
-        auto check = a -> get_type();
-        out += a -> get_original_header();
-        if (check){
-            out += a -> write();
-        }
-        else{
-            out+= a -> write_notype();
-        }
-    }
-    return out;
+    return bytes;
+    //std::string out = "";
+    //for(Subpacket::Tag17::Sub::Ptr const & a : attributes){
+    //    auto check = a -> get_type();
+    //    out += a -> get_original_header();
+    //    if (check){
+    //        out += a -> write();
+    //    }
+    //    else{
+    //        out+= a -> write_notype();
+    //    }
+    //}
+    //return out;
 }
 
 Tag17::Attributes Tag17::get_attributes() const{
