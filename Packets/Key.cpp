@@ -256,8 +256,9 @@ std::string Key::raw_common() const{
     }
     #endif
 */
-    std::string out = std::string(bytes);
-    return out;
+    if (bytes == "")
+        throw std::runtime_error("Key empty");
+    return bytes;
 }
 
 uint32_t Key::get_time() const{
