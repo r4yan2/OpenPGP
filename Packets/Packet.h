@@ -128,6 +128,7 @@ namespace OpenPGP {
                 };
 
             protected:
+                std::string bytes = "";
                 uint8_t tag;        // RFC 4880 sec 4.3
                 uint8_t version;
                 bool format;        // OLD (false) or NEW (true); defaults to NEW

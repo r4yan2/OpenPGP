@@ -73,7 +73,6 @@ namespace OpenPGP {
                 typedef std::vector <Subpacket::Tag17::Sub::Ptr> Attributes;
 
             private:
-                std::string bytes;
                 uint64_t length;
                 uint8_t type;
 

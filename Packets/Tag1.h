@@ -98,7 +98,6 @@ namespace OpenPGP {
                 std::string keyid;      // 8 octets
                 uint8_t pka;
                 PKA::Values mpi;        // algorithm specific fields
-                std::string bytes;
 
             public:
                 typedef std::shared_ptr <Packet::Tag1> Ptr;

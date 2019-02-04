@@ -97,7 +97,6 @@ namespace OpenPGP {
                 std::string filename;
                 uint32_t time;
                 std::string literal;    // source data; no line ending conversion
-                std::string bytes;
 
             public:
                 typedef std::shared_ptr <Packet::Tag11> Ptr;

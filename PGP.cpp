@@ -199,9 +199,16 @@ Packet::Tag::Ptr PGP::read_packet_raw(const bool format, const uint8_t tag, uint
     out -> set_format(format);
     out -> set_partial(partial);
     out -> set_size(length);
+     
     try{
-        out -> read(data.substr(pos, length));
-    }catch(...){}
+        if (data.size() < pos+length)
+            out -> read(data);
+        else
+            out -> read(data.substr(pos, length));
+
+    }catch(std::exception &e){
+        std::cout << e.what() << std::endl;
+    }
 
     // update position to end of packet
     pos += length;

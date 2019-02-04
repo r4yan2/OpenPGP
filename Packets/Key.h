@@ -44,7 +44,6 @@ namespace OpenPGP {
 
                 // version 3
                 uint32_t expire;
-                std::string bytes;
 
                 #ifdef GPG_COMPATIBLE
                 std::string curve;
