@@ -4,5 +4,6 @@ install(FILES
     Sub1.h
     Subpacket.h
     Subpackets.h
+    SubWrong.h
 
     DESTINATION include/Packets/Tag17)

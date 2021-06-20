@@ -1,7 +1,7 @@
 /*
-pgptime.h
+SubWrong.h
 
-Copyright (c) 2013 - 2019 Jason Lee @ calccrypto at gmail.com
+Copyright (c) 2013 - 2017 Jason Lee @ calccrypto at gmail.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,31 +22,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#ifndef __PGP_TIME__
-#define __PGP_TIME__
+#ifndef __TAG2_SUBWRONG__
+#define __TAG2_SUBWRONG__
 
-#include <ctime>
-#include <string>
+#include "Packets/Tag2/Subpacket.h"
 
 namespace OpenPGP {
-    const std::string dayofweek[7] = {"Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"};
-    const std::string month[12]    = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"};
+    namespace Subpacket {
+        namespace Tag2 {
+            class SubWrong : public Sub {
+            private:
+                std::string data;
 
-    // get current time since epoch
-    time_t now();
+                void actual_read(const std::string & data);
+                void show_contents(HumanReadable & hr) const;
+                Status actual_valid(const bool check_mpi) const;
+            public:
+                typedef std::shared_ptr<SubWrong> Ptr;
 
-    // show time as: Day_of_Week Month Day Hour:Minute:Second UTC Year
-    std::string show_time(time_t time);
+                SubWrong();
+                SubWrong(const uint8_t &t);
 
-    // write a time following strftime format
-    std::string show_time_format(time_t time, const char* format, uint8_t limit);
+                SubWrong(const std::string &data);
 
-    // show time as Year-Month-Day
-    std::string show_date(time_t time);
+                std::string raw() const;
 
-    // show time difference as Y Years D Days H Hours M Minutes S Seconds
-    // Only if the field is not zero. If a field is 0, it will not show.
-    std::string show_dt(time_t dt);
+                Sub::Ptr clone() const;
+            };
+        }
+    }
 }
 
 #endif

@@ -76,6 +76,12 @@ void Key::read_common(const std::string & data, std::string::size_type & pos, co
             mpi.push_back(read_MPI(data, pos));     // ELGAMAL y
         }
         #ifdef GPG_COMPATIBLE
+        // RESERVED_ELGAMAL
+        else if (pka == PKA::ID::RESERVED_ELGAMAL) {
+            mpi.push_back(read_MPI(data, pos));     // ELGAMAL p
+            mpi.push_back(read_MPI(data, pos));     // ELGAMAL g
+            mpi.push_back(read_MPI(data, pos));     // ELGAMAL y
+        }
         // ECDSA
         else if(pka == PKA::ID::ECDSA) {
             uint8_t curve_dim = data[pos];
@@ -100,6 +106,10 @@ void Key::read_common(const std::string & data, std::string::size_type & pos, co
             kdf_hash = data[pos + 2];
             kdf_alg = data[pos + 3];
             pos += 4; // Jump over the KDF parameters
+        }
+        // DH
+        else if (pka == PKA::ID::RESERVED_DH) {
+            mpi.push_back(read_MPI(data, pos));
         }
         #endif
         else{

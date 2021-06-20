@@ -35,6 +35,7 @@ add_library(Tag2Subpackets OBJECT
     Sub30.cpp
     Sub31.cpp
     Sub32.cpp
-    Sub33.cpp)
+    Sub33.cpp
+    SubWrong.cpp)
 
 set_property(TARGET Tag2Subpackets PROPERTY POSITION_INDEPENDENT_CODE ON)

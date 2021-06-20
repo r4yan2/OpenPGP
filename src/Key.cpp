@@ -217,7 +217,8 @@ Key::pkey Key::get_pkey() const {
                 break;
             case Packet::USER_ATTRIBUTE:
                 if (!lastUserID) {
-                    throw std::runtime_error("User attribute found without a UserID packet");
+                    pk.trashPackets.push_back(packets[i]);
+                    continue;
                 }
                 pk.uid_userAtt.insert(std::make_pair(lastUserID, packets[i]));
                 lastUser_userAtt = packets[i];
@@ -236,8 +237,8 @@ Key::pkey Key::get_pkey() const {
                 lastSubkey = packets[i];
                 break;
             default:
-                throw std::runtime_error("Packet not recognized during merge");
-                // break;
+                pk.trashPackets.push_back(packets[i]);
+                break;
         }
     }
     return pk;
@@ -440,6 +441,7 @@ void Key::merge(const Key::Ptr &k) {
     pk1.subKeys.insert(pk2.subKeys.begin(), pk2.subKeys.end());
     pk1.uid_userAtt.insert(pk2.uid_userAtt.begin(), pk2.uid_userAtt.end());
     pk1.uid_list.insert(pk1.uid_list.end(), pk2.uid_list.begin(), pk2.uid_list.end());
+    pk1.trashPackets.insert(pk1.trashPackets.end(), pk2.trashPackets.begin(), pk2.trashPackets.end());
 
     // Building the new packets list extracting the packet from the joined sigpairs
     Packets new_packets;
@@ -468,6 +470,11 @@ void Key::merge(const Key::Ptr &k) {
                     }
                 }
             }
+        }
+    }
+    for (const Packet::Tag::Ptr &tp: pk1.trashPackets){
+        if (std::find(new_packets.begin(), new_packets.end(), tp) == new_packets.end()){
+            new_packets.push_back(tp);
         }
     }
 

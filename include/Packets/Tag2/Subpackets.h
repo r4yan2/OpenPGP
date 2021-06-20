@@ -64,6 +64,7 @@ THE SOFTWARE.
 
 #ifdef GPG_COMPATIBLE
 #include "Packets/Tag2/Sub33.h"      // Issuer Fingerprint (GPG extension)
+#include "Packets/Tag2/SubWrong.h"   // Faulty packet
 #endif
 
 // 100 To 110           // Private or experimental

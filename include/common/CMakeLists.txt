@@ -6,5 +6,6 @@ install(FILES
     compiler.h
     cryptomath.h
     includes.h
+    errors.h
 
     DESTINATION include/common)

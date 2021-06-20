@@ -61,6 +61,8 @@ namespace OpenPGP {
             #ifdef GPG_COMPATIBLE
             constexpr uint8_t ECDH                       = 18;
             constexpr uint8_t ECDSA                      = 19;
+            constexpr uint8_t RESERVED_ELGAMAL           = 20;
+            constexpr uint8_t RESERVED_DH                = 21;
             constexpr uint8_t EdDSA                      = 22;
             #endif
         }
@@ -74,6 +76,8 @@ namespace OpenPGP {
             #ifdef GPG_COMPATIBLE
             std::make_pair(ID::ECDH,                     "ECDH"),
             std::make_pair(ID::ECDSA,                    "ECDSA"),
+            std::make_pair(ID::RESERVED_ELGAMAL,         "Reserved (formerly ELGAMAL Encrypt or Sign)"),
+            std::make_pair(ID::RESERVED_DH,              "Reserved for Diffie-Hellman (X9.42), as defined for IETF-S / MIME)"),
             std::make_pair(ID::EdDSA,                    "EdDSA"),
             #else
             std::make_pair(18,                           "Reserved for Elliptic Curve"),
@@ -165,6 +169,10 @@ namespace OpenPGP {
         bool can_encrypt(const uint8_t alg);
         bool can_sign(const uint8_t alg);
         bool is_RSA(const uint8_t alg);
+        #ifdef GPG_COMPATIBLE
+        bool right_curve(const uint8_t &alg,std::string OID);
+        bool is_EC(std::string OID);
+        #endif
         bool valid(const uint8_t alg);
 
         /*

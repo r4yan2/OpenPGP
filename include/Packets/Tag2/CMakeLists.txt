@@ -37,5 +37,6 @@ install(FILES
     Sub9.h
     Subpacket.h
     Subpackets.h
+    SubWrong.h
 
     DESTINATION include/Packets/Tag2)

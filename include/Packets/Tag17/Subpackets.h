@@ -30,4 +30,8 @@ THE SOFTWARE.
 
 #include "Sub1.h"      // Image Attribute
 
+#ifdef GPG_COMPATIBLE
+#include "Packets/Tag17/SubWrong.h"   // Faulty packet
+#endif
+
 #endif

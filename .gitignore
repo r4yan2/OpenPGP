@@ -40,3 +40,10 @@ $RECYCLE.BIN/
 *.depend
 *.layout
 *.cbTemp
+
+############
+## VIM stuff
+###########
+
+*.swp
+*.swo
